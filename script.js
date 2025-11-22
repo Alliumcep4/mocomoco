@@ -1,46 +1,69 @@
-/* ============================================================
-   ==================== VARIABLES GLOBALES =====================
-   ============================================================ */
+// ================= VARIABLES GLOBALES =================
+import { auth, db } from './firebase.js';
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 let listas = JSON.parse(localStorage.getItem("listas")) || [
     { id: 1, titulo: "Mi primera lista", items: [] }
 ];
-
 let listaActiva = parseInt(localStorage.getItem("listaActiva")) || 1;
-
 let premium = false; // Cambia a true para listas ilimitadas
 
+const useFirebase = true;
 
-/* ============================================================
-   ======================= GUARDAR DATOS =======================
-   ============================================================ */
-
-function guardarDatos() {
-    localStorage.setItem("listas", JSON.stringify(listas));
-    localStorage.setItem("listaActiva", listaActiva);
+// ================= FIREBASE =================
+if (useFirebase) {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            try {
+                const docRef = doc(db, "usuarios", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    listas = docSnap.data().listas || listas;
+                    listaActiva = docSnap.data().listaActiva || listaActiva;
+                } else {
+                    // Crear documento inicial si no existe
+                    await setDoc(docRef, { listas, listaActiva });
+                }
+            } catch (error) {
+                console.error("Error al obtener datos de Firestore:", error);
+            }
+            guardarDatos();
+            renderListaCards();
+            renderHome();
+        } else {
+            window.location.href = "auth.html";
+        }
+    });
 }
 
+// ================= GUARDAR DATOS =================
+async function guardarDatos() {
+    localStorage.setItem("listas", JSON.stringify(listas));
+    localStorage.setItem("listaActiva", listaActiva);
 
-/* ============================================================
-   ========================= INICIO ============================
-   ============================================================ */
+    if (useFirebase && auth.currentUser) {
+        try {
+            const docRef = doc(db, "usuarios", auth.currentUser.uid);
+            await setDoc(docRef, { listas, listaActiva });
+        } catch (error) {
+            console.error("Error al guardar datos en Firestore:", error);
+        }
+    }
+}
 
+// ================= INICIO =================
 document.addEventListener("DOMContentLoaded", () => {
     setupNavegacion();
     setupSidebar();
     renderListaCards();
     renderHome();
 
-    // Botón fijo de nueva lista
     const fixedBtn = document.getElementById("add-list-btn");
     if (fixedBtn) fixedBtn.onclick = () => crearLista();
 });
 
-
-/* ============================================================
-   ================= NAVEGACIÓN ENTRE SECCIONES ================
-   ============================================================ */
-
+// ================= NAVEGACIÓN =================
 function setupNavegacion() {
     const links = document.querySelectorAll(".nav-links a");
     const secciones = document.querySelectorAll(".section");
@@ -50,12 +73,10 @@ function setupNavegacion() {
     links.forEach(link => {
         link.addEventListener("click", e => {
             e.preventDefault();
-
             const objetivo = link.dataset.section;
             secciones.forEach(s => s.classList.remove("active"));
             document.getElementById(objetivo).classList.add("active");
 
-            // Cerrar menú lateral
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
@@ -63,14 +84,10 @@ function setupNavegacion() {
     });
 }
 
-
-
-/* ============================================================
-   ==================== SECCIÓN: LISTAS ========================
-   ============================================================ */
-
+// ================= LISTAS =================
 function renderListaCards() {
     const cont = document.getElementById("multi-lists-container");
+    if (!cont) return;
     cont.innerHTML = "";
 
     listas.forEach(lista => {
@@ -129,7 +146,6 @@ function renderListaCards() {
         cont.appendChild(card);
     });
 
-    // Límite si no es premium
     const fixedBtn = document.getElementById("add-list-btn");
     if (fixedBtn) fixedBtn.disabled = !premium && listas.length >= 3;
 }
@@ -165,12 +181,7 @@ function eliminarLista(id) {
     renderHome();
 }
 
-
-
-/* ============================================================
-   ========================= HOME ==============================
-   ============================================================ */
-
+// ================= HOME =================
 function renderHome() {
     const lista = listas.find(l => l.id === listaActiva);
     if (!lista) return;
@@ -179,6 +190,7 @@ function renderHome() {
     if (homeTitle) homeTitle.textContent = lista.titulo;
 
     const cont = document.getElementById("lista");
+    if (!cont) return;
     cont.innerHTML = "";
 
     lista.items.forEach((item, index) => {
@@ -240,31 +252,22 @@ function setupReset(lista) {
     };
 }
 
-
-
-/* ============================================================
-   ==================== SIDEBAR / HAMBURGUESA ==================
-   ============================================================ */
-
+// ================= SIDEBAR / HAMBURGUESA =================
 function setupSidebar() {
     const hamb = document.getElementById("hamburger");
     const nav = document.querySelector(".nav-links");
     const overlay = document.getElementById("overlay");
     const mobileBreakpoint = 480;
 
-    // Evitar cierre al hacer clic dentro
     nav.addEventListener("click", e => e.stopPropagation());
 
-    // Abrir/cerrar menú
     hamb.addEventListener("click", e => {
         e.stopPropagation();
-
         const isOpen = nav.classList.toggle("open");
         overlay.style.display = isOpen && window.innerWidth <= mobileBreakpoint ? "block" : "none";
         document.body.classList.toggle("menu-open", isOpen);
     });
 
-    // Cerrar al click fuera
     document.addEventListener("click", e => {
         if (nav.classList.contains("open") && !nav.contains(e.target) && e.target !== hamb) {
             nav.classList.remove("open");
@@ -273,14 +276,12 @@ function setupSidebar() {
         }
     });
 
-    // Cerrar tocando el overlay
     overlay.addEventListener("click", () => {
         nav.classList.remove("open");
         overlay.style.display = "none";
         document.body.classList.remove("menu-open");
     });
 
-    // Reset al redimensionar
     window.addEventListener("resize", () => {
         if (window.innerWidth > mobileBreakpoint) {
             nav.classList.remove("open");
@@ -289,7 +290,6 @@ function setupSidebar() {
         }
     });
 
-    // 🔥 IMPORTANTE: forzar estado inicial limpio SIEMPRE
     nav.classList.remove("open");
     overlay.style.display = "none";
     document.body.classList.remove("menu-open");

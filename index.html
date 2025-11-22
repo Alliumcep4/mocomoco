@@ -1,127 +1,111 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moco</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moco</title>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Gochi+Hand&display=swap" rel="stylesheet">
-    
-    <link rel="icon" href="img/logo_moco.png" type="image/png">
-    <link rel="stylesheet" href="style.css">
+<link rel="icon" href="img/logo_moco.png" type="image/png">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-     <!-- Overlay para móvil -->
-    <div class="overlay" id="overlay"></div>
+<!-- Overlay para móvil -->
+<div class="overlay" id="overlay"></div>
 
+<!-- DECORACIONES -->
+<div class="bubble b1"></div>
+<div class="bubble b2"></div>
+<div class="bubble b3"></div>
+<div class="bubble b4"></div>
+<div class="bubble b5"></div>
 
-    <!-- DECORACIONES -->
-    <div class="bubble b1"></div>
-    <div class="bubble b2"></div>
-    <div class="bubble b3"></div>
-    <div class="bubble b4"></div>
-    <div class="bubble b5"></div>
+<span class="star" style="top:8%;left:30%">✦</span>
+<span class="star" style="top:20%;right:20%;animation-delay:0.3s">✧</span>
+<span class="star" style="top:50%;right:15%;animation-delay:0.7s">✦</span>
+<span class="star" style="bottom:30%;right:25%;animation-delay:1s">✧</span>
+<span class="star" style="bottom:20%;left:20%;animation-delay:0.5s">✦</span>
+<span class="star" style="top:65%;left:10%;animation-delay:1.2s">✧</span>
 
-    <span class="star" style="top:8%;left:30%">✦</span>
-    <span class="star" style="top:20%;right:20%;animation-delay:0.3s">✧</span>
-    <span class="star" style="top:50%;right:15%;animation-delay:0.7s">✦</span>
-    <span class="star" style="bottom:30%;right:25%;animation-delay:1s">✧</span>
-    <span class="star" style="bottom:20%;left:20%;animation-delay:0.5s">✦</span>
-    <span class="star" style="top:65%;left:10%;animation-delay:1.2s">✧</span>
+<div class="circle-deco c1"></div>
+<div class="circle-deco c2"></div>
+<div class="circle-deco c3"></div>
 
-    <div class="circle-deco c1"></div>
-    <div class="circle-deco c2"></div>
-    <div class="circle-deco c3"></div>
+<img src="img/flan.png" class="deco-img img1" alt="">
+<img src="img/jellyfish.png" class="deco-img img2" alt="">
+<img src="img/macaron.png" class="deco-img img3" alt="">
+<img src="img/soda.png" class="deco-img img4" alt="">
 
-    <img src="img/flan.png" class="deco-img img1" alt="">
-    <img src="img/jellyfish.png" class="deco-img img2" alt="">
-    <img src="img/macaron.png" class="deco-img img3" alt="">
-    <img src="img/soda.png" class="deco-img img4" alt="">
+<!-- HEADER -->
+<header class="top-header">
+    <div class="logo-box">
+        <img src="img/logo_moco.png" class="logo-img">
+        <span>MOCO</span>
+    </div>
+    <div class="nav-center">
+        <nav class="nav-links">
+            <a href="#" data-section="home">Home</a>
+            <a href="#" data-section="listas">Listas</a>
+            <a href="#" data-section="sobre">Sobre Moco</a>
+        </nav>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+</header>
 
-    <!-- HEADER -->
-    <header class="top-header">
-        <div class="logo-box">
-            <img src="img/logo_moco.png" class="logo-img">
-            <span>MOCO</span>
-        </div>
-        <div class="nav-center">
-            <nav class="nav-links">
-                <a href="#" data-section="home">Home</a>
-                <a href="#" data-section="listas">Listas</a>
-                <a href="#" data-section="sobre">Sobre Moco</a>
-            </nav>
-        </div>
-        <button class="hamburger" id="hamburger">☰</button>
-    </header>
-
-    <!-- SECCIONES -->
-    <main>
-        <!-- HOME -->
-        <section id="home" class="section active">
-            <div class="center-panel">
-                <div class="list-container">
-                    <div class="list-header">
-                        <span class="list-title">Mi Lista Actual</span>
-                        <div class="header-dots">
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                        </div>
-                    </div>
-                    <div class="list-content" id="lista"></div>
-                    <div class="input-area">
-                        <input type="text" id="item" placeholder="añadir producto...">
-                        <button class="send-btn" id="add">send</button>
-                    </div>
-                    <div class="list-footer">
-                        <span>🛒 tu lista de compras</span>
-                        <button class="reset-btn" id="reset-btn">reset</button>
+<!-- SECCIONES -->
+<main>
+    <!-- HOME -->
+    <section id="home" class="section active">
+        <div class="center-panel">
+            <div class="list-container">
+                <div class="list-header">
+                    <span class="list-title">Mi Lista Actual</span>
+                    <div class="header-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
                     </div>
                 </div>
+                <div class="list-content" id="lista"></div>
+                <div class="input-area">
+                    <input type="text" id="item" placeholder="añadir producto...">
+                    <button class="send-btn" id="add">send</button>
+                </div>
+                <div class="list-footer">
+                    <span>Copyright ©Allium</span>
+                    <button class="reset-btn" id="reset-btn">reset</button>
+                </div>
             </div>
-        </section>
-
-        <!-- LISTAS -->
-<!-- LISTAS -->
-<section id="listas" class="section">
-    <div class="center-panel">
-        <h2>Mis Listas</h2>
-
-        <!-- Contenedor de previsualización de listas -->
-        <div class="multi-lists-section">
-            <div class="multi-lists-container" id="multi-lists-container">
-                <!-- Las listas se crearán dinámicamente con JS -->
-            </div>
-            <button class="add-list-btn" id="add-list-btn">+ Nueva lista</button>
         </div>
+    </section>
 
-        <!-- Panel de la lista activa (solo muestra los items en Home) -->
-        <div class="list-container" id="multi-lista-panel" style="display:none;">
-            <div class="input-area">
-                <input type="text" id="multi-item" placeholder="añadir producto a la lista actual...">
-                <button class="send-btn" id="multi-add">send</button>
+    <!-- LISTAS -->
+    <section id="listas" class="section">
+        <div class="center-panel">
+            <h2>Mis Listas</h2>
+            <div class="multi-lists-section">
+                <div class="multi-lists-container" id="multi-lists-container"></div>
+                <button class="add-list-btn" id="add-list-btn">+ Nueva lista</button>
             </div>
-            <div class="list-content" id="multi-lista"></div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <!-- SOBRE MOCO -->
+    <section id="sobre" class="section">
+        <div class="center-panel">
+            <h2>Sobre Moco</h2>
+            <p>
+                Bienvenido a Moco, tu aplicación de confianza para gestionar listas de la compra, 
+                ¿Sabías que si no registras lo que tienes intención de comprar en el súper <br>
+                es muy probable que te dejes entre dos y cuatro productos? 
+            </p>
+            <p>¡Diviértete organizando tus listas y manteniendo todo bajo control!</p>
+        </div>
+    </section>
+</main>
 
-        <!-- SOBRE MOCO -->
-        <section id="sobre" class="section">
-            <div class="center-panel">
-                <h2>Sobre Moco</h2>
-                <p>
-                    Bienvenido a Moco, tu aplicación de confianza para gestionar listas de la compra, 
-                    ¿Sabías que si no registras lo que tienes intención de comprar en el súper <br>
-                    es muy probable que te dejes entre dos y cuatro productos? 
-                </p>
-                <p>¡Diviértete organizando tus listas y manteniendo todo bajo control!</p>
-            </div>
-        </section>
-    </main>
+<!-- JS -->
+<script type="module" src="script.js"></script>
 
-   
-    <script src="script.js"></script>
 </body>
 </html>
