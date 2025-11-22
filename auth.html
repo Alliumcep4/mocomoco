@@ -114,6 +114,17 @@
 <script type="module">
 import { auth, db } from './firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    // La sesión se guardará en localStorage
+    console.log("Persistencia activada: localStorage");
+  })
+  .catch((error) => {
+    console.error("Error al activar persistencia:", error);
+  });
+
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 const loginForm = document.getElementById('login-form');
