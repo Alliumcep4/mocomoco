@@ -3,10 +3,8 @@ import { auth, db } from './firebase.js';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-let listas = JSON.parse(localStorage.getItem("listas")) || [
-    { id: 1, titulo: "Mi primera lista", items: [] }
-];
-let listaActiva = parseInt(localStorage.getItem("listaActiva")) || 1;
+let listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
+let listaActiva = 1;
 let premium = false; // Cambia a true para listas ilimitadas
 
 const useFirebase = true;
@@ -18,12 +16,13 @@ if (useFirebase) {
             try {
                 const docRef = doc(db, "usuarios", user.uid);
 
-                // Escuchar cambios en tiempo real
-                onSnapshot(docRef, async (docSnap) => {
+                // Escuchar cambios en tiempo real y renderizar directamente
+                onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         listas = docSnap.data().listas || [{ id: 1, titulo: "Mi primera lista", items: [] }];
-                        listaActiva = docSnap.data().listaActiva || 1;
+                        listaActiva = docSnap.data().listaActiva || listas[0].id;
 
+                        // Opcional: guardar en localStorage solo como caché
                         localStorage.setItem("listas", JSON.stringify(listas));
                         localStorage.setItem("listaActiva", listaActiva);
 
@@ -32,7 +31,7 @@ if (useFirebase) {
                     } else {
                         listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
                         listaActiva = 1;
-                        await setDoc(docRef, { listas, listaActiva });
+                        setDoc(docRef, { listas, listaActiva });
                     }
                 });
             } catch (error) {
@@ -46,18 +45,19 @@ if (useFirebase) {
 
 // ================= GUARDAR DATOS =================
 async function guardarDatos() {
-    localStorage.setItem("listas", JSON.stringify(listas));
-    localStorage.setItem("listaActiva", listaActiva);
-
+    // Actualizar Firebase primero, localStorage como caché
     if (useFirebase && auth.currentUser) {
         try {
             const docRef = doc(db, "usuarios", auth.currentUser.uid);
-            // Cambiado a updateDoc para no sobrescribir el documento completo
             await updateDoc(docRef, { listas, listaActiva });
         } catch (error) {
             console.error("Error al guardar datos en Firestore:", error);
         }
     }
+
+    // Caché opcional
+    localStorage.setItem("listas", JSON.stringify(listas));
+    localStorage.setItem("listaActiva", listaActiva);
 }
 
 // ================= INICIO =================
