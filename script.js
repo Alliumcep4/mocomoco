@@ -3,65 +3,36 @@ import { auth, db } from './firebase.js';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-let listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
-let listaActiva = 1;
+let listas = [];
+let listaActiva = null;
 let premium = false; // Cambia a true para listas ilimitadas
-
 const useFirebase = true;
 
-// ================= FIREBASE =================
-if (useFirebase) {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            try {
-                const docRef = doc(db, "usuarios", user.uid);
-
-                // Escuchar cambios en tiempo real y renderizar directamente
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        listas = docSnap.data().listas || [{ id: 1, titulo: "Mi primera lista", items: [] }];
-                        listaActiva = docSnap.data().listaActiva || listas[0].id;
-
-                        // Opcional: guardar en localStorage solo como caché
-                        localStorage.setItem("listas", JSON.stringify(listas));
-                        localStorage.setItem("listaActiva", listaActiva);
-
-                        renderListaCards();
-                        renderHome();
-                    } else {
-                        listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
-                        listaActiva = 1;
-                        setDoc(docRef, { listas, listaActiva });
-                    }
-                });
-            } catch (error) {
-                console.error("Error al obtener datos de Firestore:", error);
-            }
-        } else {
-            window.location.href = "auth.html";
-        }
-    });
-}
-
 // ================= GUARDAR DATOS =================
-async function guardarDatos() {
-    // Actualizar Firebase primero, localStorage como caché
-    if (useFirebase && auth.currentUser) {
-        try {
-            const docRef = doc(db, "usuarios", auth.currentUser.uid);
-            await updateDoc(docRef, { listas, listaActiva });
-        } catch (error) {
-            console.error("Error al guardar datos en Firestore:", error);
-        }
-    }
-
-    // Caché opcional
+function guardarDatos() {
     localStorage.setItem("listas", JSON.stringify(listas));
     localStorage.setItem("listaActiva", listaActiva);
+    if (useFirebase && auth.currentUser) {
+        const docRef = doc(db, "usuarios", auth.currentUser.uid);
+        updateDoc(docRef, { listas, listaActiva }).catch(e => console.error("Error Firebase:", e));
+    }
 }
 
 // ================= INICIO =================
 document.addEventListener("DOMContentLoaded", () => {
+    // Cargar listas desde localStorage
+    const listasCache = localStorage.getItem("listas");
+    const listaActivaCache = localStorage.getItem("listaActiva");
+
+    if (listasCache) {
+        listas = JSON.parse(listasCache);
+        listaActiva = parseInt(listaActivaCache);
+    } else {
+        listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
+        listaActiva = 1;
+        guardarDatos();
+    }
+
     setupNavegacion();
     setupSidebar();
     renderListaCards();
@@ -71,12 +42,46 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fixedBtn) fixedBtn.onclick = () => crearLista();
 });
 
+// ================= FIREBASE =================
+if (useFirebase) {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const docRef = doc(db, "usuarios", user.uid);
+
+            // Crear doc si no existe
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                await setDoc(docRef, { listas, listaActiva });
+            }
+
+            // Escuchar cambios en Firebase y actualizar localStorage/UI
+            onSnapshot(docRef, (snap) => {
+                if (!snap.exists()) return;
+                const data = snap.data();
+                if (data.listas && data.listas.length > 0) listas = data.listas;
+                if (data.listaActiva) listaActiva = data.listaActiva;
+                guardarDatos();
+                renderListaCards();
+                renderHome();
+            });
+        } else {
+            window.location.href = "auth.html";
+        }
+    });
+}
+
 // ================= NAVEGACIÓN =================
 function setupNavegacion() {
     const links = document.querySelectorAll(".nav-links a");
     const secciones = document.querySelectorAll(".section");
     const nav = document.querySelector(".nav-links");
     const overlay = document.querySelector(".overlay");
+    const hamb = document.getElementById("hamburger");
+    const mobileBreakpoint = 480;
+
+    const actualizarHamb = () => {
+        hamb.style.display = window.innerWidth <= mobileBreakpoint && !nav.classList.contains("open") ? "block" : "none";
+    };
 
     links.forEach(link => {
         link.addEventListener("click", e => {
@@ -85,13 +90,13 @@ function setupNavegacion() {
             secciones.forEach(s => s.classList.remove("active"));
             document.getElementById(objetivo).classList.add("active");
 
-            nav.classList.remove("open");
-            overlay.style.display = "none";
-            document.body.classList.remove("menu-open");
-
-            // Aseguramos que el botón hamburguesa reaparezca
-            const hamb = document.getElementById("hamburger");
-            if (hamb) hamb.style.display = "block";
+            // Cerrar menú si está abierto
+            if (nav.classList.contains("open")) {
+                nav.classList.remove("open");
+                overlay.style.display = "none";
+                document.body.classList.remove("menu-open");
+                actualizarHamb();
+            }
         });
     });
 }
@@ -127,13 +132,11 @@ function renderListaCards() {
             const input = document.createElement("input");
             input.type = "text";
             input.value = lista.titulo;
-
             input.style.width = "100%";
             input.style.fontSize = "12px";
             input.style.padding = "4px";
             input.style.borderRadius = "8px";
             input.style.border = "2px solid var(--color-input-border)";
-
             titleDiv.replaceWith(input);
             input.focus();
 
@@ -170,11 +173,9 @@ function crearLista() {
 
     const id = Date.now();
     const nueva = { id, titulo: `Lista ${listas.length + 1}`, items: [] };
-
     listas.push(nueva);
     listaActiva = id;
     guardarDatos();
-
     renderListaCards();
     renderHome();
 }
@@ -187,7 +188,6 @@ function eliminarLista(id) {
 
     listas = listas.filter(l => l.id !== id);
     if (listaActiva === id) listaActiva = listas[0].id;
-
     guardarDatos();
     renderListaCards();
     renderHome();
@@ -208,25 +208,21 @@ function renderHome() {
     lista.items.forEach((item, index) => {
         const div = document.createElement("div");
         div.className = `list-item ${item.check ? "checked" : ""}`;
-
         div.innerHTML = `
             <div class="item-checkbox"></div>
             <div class="item-text">${item.texto}</div>
             <button class="delete-btn">×</button>
         `;
-
         div.querySelector(".item-checkbox").addEventListener("click", () => {
             item.check = !item.check;
             guardarDatos();
             renderHome();
         });
-
         div.querySelector(".delete-btn").addEventListener("click", () => {
             lista.items.splice(index, 1);
             guardarDatos();
             renderHome();
         });
-
         cont.appendChild(div);
     });
 
@@ -237,7 +233,6 @@ function renderHome() {
 function setupHomeInput(lista) {
     const input = document.getElementById("item");
     const btn = document.getElementById("add");
-
     btn.onclick = () => añadirItem(lista);
     input.onkeydown = e => { if (e.key === "Enter") añadirItem(lista); };
 }
@@ -245,8 +240,7 @@ function setupHomeInput(lista) {
 function añadirItem(lista) {
     const input = document.getElementById("item");
     const texto = input.value.trim();
-    if (texto === "") return;
-
+    if (!texto) return;
     lista.items.push({ texto, check: false });
     input.value = "";
     guardarDatos();
@@ -264,23 +258,27 @@ function setupReset(lista) {
     };
 }
 
-// ================= SIDEBAR / HAMBURGUESA =================
+// ================= SIDEBAR =================
 function setupSidebar() {
     const hamb = document.getElementById("hamburger");
     const nav = document.querySelector(".nav-links");
     const overlay = document.getElementById("overlay");
     const mobileBreakpoint = 480;
 
+    const actualizarHamb = () => {
+        hamb.style.display = window.innerWidth <= mobileBreakpoint && !nav.classList.contains("open") ? "block" : "none";
+    };
+
+    actualizarHamb();
+
     nav.addEventListener("click", e => e.stopPropagation());
 
     hamb.addEventListener("click", e => {
         e.stopPropagation();
         const isOpen = nav.classList.toggle("open");
-        overlay.style.display = isOpen && window.innerWidth <= mobileBreakpoint ? "block" : "none";
+        overlay.style.display = isOpen ? "block" : "none";
         document.body.classList.toggle("menu-open", isOpen);
-
-        // Mostrar/ocultar botón hamburguesa
-        hamb.style.display = isOpen ? "none" : "block";
+        actualizarHamb();
     });
 
     document.addEventListener("click", e => {
@@ -288,15 +286,17 @@ function setupSidebar() {
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
-            hamb.style.display = "block";
+            actualizarHamb();
         }
     });
 
     overlay.addEventListener("click", () => {
-        nav.classList.remove("open");
-        overlay.style.display = "none";
-        document.body.classList.remove("menu-open");
-        hamb.style.display = "block";
+        if (nav.classList.contains("open")) {
+            nav.classList.remove("open");
+            overlay.style.display = "none";
+            document.body.classList.remove("menu-open");
+            actualizarHamb();
+        }
     });
 
     window.addEventListener("resize", () => {
@@ -304,12 +304,7 @@ function setupSidebar() {
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
-            hamb.style.display = "block";
         }
+        actualizarHamb();
     });
-
-    nav.classList.remove("open");
-    overlay.style.display = "none";
-    document.body.classList.remove("menu-open");
-    hamb.style.display = "block";
 }
