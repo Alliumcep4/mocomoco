@@ -1,6 +1,6 @@
 // ================= VARIABLES GLOBALES =================
 import { auth, db } from './firebase.js';
-import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 let listas = JSON.parse(localStorage.getItem("listas")) || [
@@ -52,7 +52,8 @@ async function guardarDatos() {
     if (useFirebase && auth.currentUser) {
         try {
             const docRef = doc(db, "usuarios", auth.currentUser.uid);
-            await setDoc(docRef, { listas, listaActiva });
+            // Cambiado a updateDoc para no sobrescribir el documento completo
+            await updateDoc(docRef, { listas, listaActiva });
         } catch (error) {
             console.error("Error al guardar datos en Firestore:", error);
         }
