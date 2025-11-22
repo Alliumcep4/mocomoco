@@ -19,18 +19,25 @@ if (useFirebase) {
                 const docRef = doc(db, "usuarios", user.uid);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    listas = docSnap.data().listas || listas;
-                    listaActiva = docSnap.data().listaActiva || listaActiva;
+                    // Firestore es la fuente principal
+                    listas = docSnap.data().listas || [{ id: 1, titulo: "Mi primera lista", items: [] }];
+                    listaActiva = docSnap.data().listaActiva || 1;
                 } else {
-                    // Crear documento inicial si no existe
+                    // Crear documento inicial
+                    listas = [{ id: 1, titulo: "Mi primera lista", items: [] }];
+                    listaActiva = 1;
                     await setDoc(docRef, { listas, listaActiva });
                 }
+
+                // Guardar en localStorage como caché
+                localStorage.setItem("listas", JSON.stringify(listas));
+                localStorage.setItem("listaActiva", listaActiva);
+
+                renderListaCards();
+                renderHome();
             } catch (error) {
                 console.error("Error al obtener datos de Firestore:", error);
             }
-            guardarDatos();
-            renderListaCards();
-            renderHome();
         } else {
             window.location.href = "auth.html";
         }
@@ -39,9 +46,11 @@ if (useFirebase) {
 
 // ================= GUARDAR DATOS =================
 async function guardarDatos() {
+    // Actualiza localStorage
     localStorage.setItem("listas", JSON.stringify(listas));
     localStorage.setItem("listaActiva", listaActiva);
 
+    // Actualiza Firestore solo al modificar
     if (useFirebase && auth.currentUser) {
         try {
             const docRef = doc(db, "usuarios", auth.currentUser.uid);
