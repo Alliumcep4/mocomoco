@@ -1,0 +1,420 @@
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Pixelify+Sans&display=swap');
+
+:root {
+    /* COLORES */
+    --color-bg: #f5a0a0;
+    --color-primary: #ea958d;
+    --color-primary-hover: #c05858;
+    --color-secondary: #e88a8a;
+    --color-container: #f8d4d4;
+    --color-container-border: #e8a8a8;
+    --color-header: #f0baba;
+    --color-text-dark: #5a3535;
+    --color-text-medium: #7a4a4a;
+    --color-text-light: #c8a8a8;
+    --color-input-border: #e0b0b0;
+    --color-input-border-focus: #c47070;
+    --color-item-border: #ecc0c0;
+    --color-checkbox-border: #daa0a0;
+    --color-checked-bg: rgba(180,220,180,0.5);
+    --color-checked-border: #a8d0a8;
+    --color-checked: #7bc47b;
+    --color-delete: #c48080;
+    --color-delete-hover: #a05050;
+
+    --shadow-soft: 0 15px 50px rgba(0,0,0,0.12);
+    --shadow-button: 0 4px 20px rgba(0,0,0,0.15);
+
+    --radius-large: 35px;
+    --radius-medium: 25px;
+    --radius-small: 18px;
+    --radius-pill: 50px;
+}
+
+/* RESET */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Gochi Hand', cursive;
+    background: var(--color-bg);
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 30px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* DECORACIONES FIJAS */
+.deco-img { position: fixed; pointer-events: none; z-index: -1; opacity: 0.7; }
+.deco-img.img1 { top:5%; right:5%; width:180px; transform:rotate(5deg); }
+.deco-img.img2 { bottom:5%; right:5%; width:250px; transform:rotate(-5deg); }
+.deco-img.img3 { top:50%; right:10%; width:100px; transform:rotate(0deg); }
+.deco-img.img4 { bottom:20%; left:3%; width:80px; transform:rotate(-10deg); }
+
+.bubble { position: fixed; background:var(--color-secondary); border-radius:15px; z-index:1; }
+.star { position: fixed; color:white; font-size:18px; opacity:0.9; z-index:-2; animation:twinkle 2s infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.6;transform:scale(1);} 50%{opacity:1;transform:scale(1.2);} }
+.circle-deco { position: fixed; border-radius:50%; border:3px solid rgba(255,255,255,0.2); z-index:1; }
+
+/* HEADER */
+.top-header {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; padding:15px 25px;
+    background:var(--color-container); border-radius:var(--radius-large);
+    border:3px solid var(--color-container-border); box-shadow:var(--shadow-soft);
+    position:relative; z-index:10;
+}
+
+.logo-box { display:flex; align-items:center; gap:10px; font-family:'Gochi Hand', cursive; font-size:24px; padding:8px 20px; border-radius:30px; background:var(--color-primary); color:white; box-shadow:var(--shadow-button);}
+.logo-box .logo-img { height:35px; width:auto; }
+
+.nav-links { display:flex; gap:15px; }
+.nav-links a { text-decoration:none; font-weight:600; color:var(--color-text-dark); transition:0.3s; }
+.nav-links a:hover { color:#3a2020; }
+
+.hamburger {
+    display:none;
+    font-size:28px;
+    background:var(--color-primary);
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:8px 12px;
+    cursor:pointer;
+    z-index:140 !important;
+}
+
+/* Overlay para móvil */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    z-index: 150; /* entre contenido y menú */
+    pointer-events: auto; /* captura clicks */
+}
+
+/* ===================== SIDEBAR ===================== */
+.nav-links {
+    z-index: 200; /* siempre arriba del overlay */
+    position: relative;
+}
+
+
+/* PANEL CENTRAL */
+.center-panel { display:flex; flex-direction:column; margin-top:20px; }
+
+.list-container {
+    background: var(--color-container); border-radius: var(--radius-large);
+    box-shadow: var(--shadow-soft), inset 0 2px 0 rgba(255,255,255,0.4);
+    border:3px solid var(--color-container-border); overflow:hidden; display:flex; flex-direction:column; max-height:550px;
+}
+
+.list-header { background: var(--color-header); padding:18px 28px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--color-container-border); }
+.list-title { font-family:'Pixelify Sans', sans-serif; font-weight:800; font-size:13px; color:var(--color-text-dark); text-transform:uppercase; letter-spacing:3px; }
+.header-dots { display:flex; gap:8px; }
+.dot { width:14px; height:14px; background:var(--color-container); border-radius:50%; border:2px solid var(--color-checkbox-border); }
+
+.list-content { padding:18px; flex:1; overflow-y:auto; }
+.list-content::-webkit-scrollbar { width:6px; }
+.list-content::-webkit-scrollbar-thumb { background:var(--color-checkbox-border); border-radius:10px; }
+
+.list-item { display:flex; align-items:center; gap:14px; padding:14px 20px; background:rgba(255,255,255,0.75); border-radius:var(--radius-pill); margin-bottom:12px; border:2.5px solid var(--color-item-border); transition:all 0.3s; }
+.list-item:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+.list-item.checked { background: var(--color-checked-bg); border-color:var(--color-checked-border); }
+
+.item-checkbox { width:24px; height:24px; border:3px solid var(--color-checkbox-border); border-radius:10px; background:white; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s; flex-shrink:0; }
+.list-item.checked .item-checkbox { background: var(--color-checked); border-color:var(--color-checked); }
+.list-item.checked .item-checkbox::after { content:'✓'; color:white; font-weight:800; font-size:13px; }
+
+.item-text { flex:1; font-size:15px; font-weight:600; color:var(--color-text-dark); font-family:'Gochi Hand', cursive; }
+.list-item.checked .item-text { text-decoration:line-through; color:#a0a0a0; }
+
+.delete-btn {
+    opacity: 0.8;
+    background: var(--color-delete);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-family: 'Gochi Hand', cursive;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.list-item:hover .delete-btn {
+    opacity: 1;
+    transform: scale(1.1);
+    background: var(--color-delete-hover);
+}
+
+/* Botón de borrar en la lista principal (círculo pequeño) */
+.list-item .delete-btn {
+    width: 28px;       /* ancho fijo */
+    height: 28px;      /* alto fijo */
+    border-radius: 50%; /* circular */
+    padding: 0;         /* sin padding extra */
+    font-size: 16px;
+}
+
+/* Botones dentro de list-card (abrir, borrar, renombrar) */
+.list-card .delete-btn,
+.list-card .open-list-btn,
+.list-card .rename-btn {
+    width: 100%;       /* que ocupen todo el ancho de la card */
+    border-radius: var(--radius-pill);
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* INPUT AREA CORREGIDO */
+.input-area {
+    display: flex;
+    gap: 10px;
+    padding: 18px; /* espacio interno del contenedor */
+    background: rgba(255,255,255,0.35);
+    border-radius: var(--radius-pill);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    box-sizing: border-box; /* asegura que padding no haga overflow */
+    margin: 0; /* eliminamos el margin que sobresalía */
+}
+
+.input-area input {
+    flex: 1 1 auto;   /* ocupa todo el espacio disponible */
+    min-width: 0;     /* evita que el input se expanda demasiado */
+    padding: 14px 22px;
+    border: 3px solid var(--color-input-border);
+    border-radius: var(--radius-medium);
+    font-family: 'Gochi Hand', cursive;
+    font-size: 14px;
+    background: white;
+    color: var(--color-text-dark);
+    outline: none;
+    box-sizing: border-box; /* clave para que no sobresalga */
+}
+
+.send-btn {
+    flex: 0 0 auto;
+    min-width: 80px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    border-radius: var(--radius-medium);
+    font-family: 'Gochi Hand', cursive;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: lowercase;
+}
+
+.send-btn:hover { background:var(--color-primary-hover); transform:scale(1.05); }
+
+.list-footer { background:var(--color-header); padding:14px 25px; border-top:3px solid var(--color-container-border); font-size:11px; color:var(--color-text-medium); display:flex; justify-content:space-between; align-items:center; }
+.reset-btn { background:var(--color-primary); color:white; border:none; padding:6px 14px; border-radius:12px; font-size:11px; font-weight:600; cursor:pointer; transition:0.3s; }
+.reset-btn:hover { background:var(--color-primary-hover); }
+
+/* SECCIONES */
+.section {
+    display: none;
+    background: var(--color-container);
+    border: 3px solid var(--color-container-border);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-soft);
+    padding: 40px 30px;
+    margin-top: 30px;
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+.section.active { display: block; }
+.section h2 { font-family: 'Pixelify Sans', sans-serif; font-size: 32px; color: var(--color-text-dark); text-align: center; margin-bottom: 20px; }
+.section p { font-family: 'Gochi Hand', cursive; font-size: 16px; color: var(--color-text-medium); text-align: center; max-width: 600px; margin: 0 auto 30px; }
+
+/* BOTONES DE LISTAS MULTIPLES */
+.lista-selector { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
+.switch-list { background:var(--color-primary); color:white; border:none; padding:10px 18px; border-radius:25px; cursor:pointer; transition:0.3s; font-family:'Gochi Hand', cursive; }
+.switch-list:hover, .switch-list.active { background:var(--color-primary-hover); transform:scale(1.05); }
+
+/* MULTI-LISTS / PREVIEW CARDS */
+.multi-lists-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.list-card {
+    background: var(--color-container);
+    border: 3px solid var(--color-container-border);
+    border-radius: var(--radius-medium);
+    padding: 12px;
+    width: 140px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px; /* ajuste para incluir rename-btn */
+    transition: transform 0.3s;
+}
+.list-card:hover { transform: translateY(-5px); }
+
+.list-card-title {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-text-dark);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.list-preview {
+    background: rgba(255,255,255,0.5);
+    border-radius: var(--radius-small);
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    font-family: 'Gochi Hand', cursive;
+    font-size: 11px;
+    padding: 4px;
+    margin-bottom: 8px;
+}
+.list-preview span { display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+
+/* BOTONES DENTRO DE LIST CARD */
+.open-list-btn, .delete-btn, .rename-btn {
+    font-family: 'Gochi Hand', cursive;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.open-list-btn {
+    background: var(--color-primary);
+    color: white;
+}
+.open-list-btn:hover { background: var(--color-primary-hover); }
+
+.delete-btn {
+    background: var(--color-delete);
+    color: white;
+}
+.delete-btn:hover {
+    background: var(--color-delete-hover);
+    transform: scale(1.05);
+}
+
+.rename-btn {
+    background: var(--color-secondary);
+    color: white;
+}
+.rename-btn:hover { background: var(--color-primary-hover); }
+
+.add-list-btn {
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.add-list-btn:hover { background: var(--color-primary-hover); }
+.add-list-btn.disabled { opacity: 0.6; cursor: not-allowed; }
+
+#multi-lista-panel { margin-top: 20px; }
+/* RESPONSIVE MÓVIL */
+@media (max-width: 480px) {
+
+    /* Header y botón hamburguesa */
+    .top-header {
+        position: relative;
+        z-index: 300; /* encima del overlay */
+    }
+
+    .hamburger {
+        display: block; 
+        z-index: 350 !important; /* siempre encima de todo */
+    }
+
+    /* Menú lateral */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -220px;
+        flex-direction: column;
+        background: var(--color-container);
+        height: 100%;
+        width: 200px;
+        padding: 70px 20px;
+        gap: 20px;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+        border-left: 3px solid var(--color-container-border);
+        border-radius: 0 0 0 20px;
+        z-index: 310; /* encima del overlay pero debajo del botón */
+    }
+
+    .nav-links.open {
+        right: 0;
+    }
+
+    /* Overlay */
+    .overlay {
+        z-index: 200; /* debajo del menú y header */
+        pointer-events: auto; /* permite cerrar con click */
+    }
+
+    /* Ajustes de layout */
+    .list-container { max-height: 400px; margin: 0 10px; }
+
+    /* Input y botón centrados dentro del contenedor */
+    .input-area { 
+        flex-direction: column; 
+        align-items: stretch; /* ocupa todo el ancho disponible */
+        margin: 0 10px 10px 10px; 
+        gap: 8px; 
+        width: calc(100% - 20px); /* respeta márgenes laterales */
+        box-sizing: border-box;
+    }
+
+    .input-area input { 
+        width: 100%; 
+        padding: 12px 18px; 
+        box-sizing: border-box; /* evita que sobresalga */
+    }
+
+    .send-btn { 
+        width: 100%; 
+        max-width: 120px; 
+        padding: 10px 16px; 
+        font-size: 13px; 
+        text-align: center; 
+        align-self: center; /* centrado debajo del input */
+    }
+
+    .center-panel { margin-top: 15px; }
+
+    .multi-lists-container { gap: 10px; }
+    .list-card { width: 120px; }
+    .list-preview { height: 40px; font-size: 10px; }
+}
