@@ -88,6 +88,10 @@ function setupNavegacion() {
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
+
+            // Aseguramos que el botón hamburguesa reaparezca
+            const hamb = document.getElementById("hamburger");
+            if (hamb) hamb.style.display = "block";
         });
     });
 }
@@ -274,6 +278,9 @@ function setupSidebar() {
         const isOpen = nav.classList.toggle("open");
         overlay.style.display = isOpen && window.innerWidth <= mobileBreakpoint ? "block" : "none";
         document.body.classList.toggle("menu-open", isOpen);
+
+        // Mostrar/ocultar botón hamburguesa
+        hamb.style.display = isOpen ? "none" : "block";
     });
 
     document.addEventListener("click", e => {
@@ -281,6 +288,7 @@ function setupSidebar() {
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
+            hamb.style.display = "block";
         }
     });
 
@@ -288,6 +296,7 @@ function setupSidebar() {
         nav.classList.remove("open");
         overlay.style.display = "none";
         document.body.classList.remove("menu-open");
+        hamb.style.display = "block";
     });
 
     window.addEventListener("resize", () => {
@@ -295,10 +304,12 @@ function setupSidebar() {
             nav.classList.remove("open");
             overlay.style.display = "none";
             document.body.classList.remove("menu-open");
+            hamb.style.display = "block";
         }
     });
 
     nav.classList.remove("open");
     overlay.style.display = "none";
     document.body.classList.remove("menu-open");
+    hamb.style.display = "block";
 }
