@@ -4,9 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moco - Login / Registro</title>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Gochi+Hand&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Pixelify+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
+body {
+    font-family: 'Gochi Hand', cursive;
+    background: var(--color-bg);
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 0;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Decoraciones fijas (imágenes flan, jellyfish, macaron, soda) */
+.deco-img { position: fixed; pointer-events: none; z-index: -1; opacity: 0.7; }
+.deco-img.img1 { top:5%; right:5%; width:150px; transform:rotate(5deg); }
+.deco-img.img2 { bottom:5%; right:5%; width:200px; transform:rotate(-5deg); }
+.deco-img.img3 { top:50%; right:10%; width:100px; transform:rotate(0deg); }
+.deco-img.img4 { bottom:20%; left:3%; width:80px; transform:rotate(-10deg); }
+
+/* Estrellas animadas */
+.star { position: fixed; color:white; font-size:24px; opacity:0.9; z-index:-2; animation:twinkle 2s infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.6;transform:scale(1);} 50%{opacity:1;transform:scale(1.2);} }
+
 /* =================== LOGIN / REGISTER =================== */
 .auth-container {
     max-width: 400px;
@@ -33,10 +57,11 @@
     flex-direction: column;
     gap: 18px;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .auth-form input {
-    padding: 14px 20px;
+    padding: 14px 40px 14px 20px;
     border-radius: var(--radius-medium);
     border: 3px solid var(--color-input-border);
     font-family: 'Gochi Hand', cursive;
@@ -45,9 +70,24 @@
     transition: border 0.3s;
 }
 
-.auth-form input:focus {
-    border-color: var(--color-input-border-focus);
+.auth-form input:focus { border-color: var(--color-input-border-focus); }
+
+/* Botón de ojo SVG */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    fill: var(--color-text-dark);
+    transition: 0.3s;
 }
+.password-toggle:hover { transform: scale(1.2); }
 
 .auth-form button {
     padding: 14px 20px;
@@ -61,7 +101,6 @@
     cursor: pointer;
     transition: 0.3s;
 }
-
 .auth-form button:hover {
     background: var(--color-primary-hover);
     transform: scale(1.05);
@@ -74,11 +113,22 @@
     color: var(--color-text-medium);
     cursor: pointer;
 }
-
 .toggle-auth span {
     color: var(--color-primary);
     font-weight: 700;
     text-decoration: underline;
+}
+
+#forgot-password {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-family: 'Gochi Hand', cursive;
+    font-size: 14px;
+    text-align: left;
+    padding: 0;
+    margin-top: -10px;
 }
 
 @media (max-width: 480px) {
@@ -89,20 +139,43 @@
 </head>
 <body>
 
+<!-- Imágenes de fondo -->
+<img src="img/flan.png" class="deco-img img1">
+<img src="img/jellyfish.png" class="deco-img img2">
+<img src="img/macaron.png" class="deco-img img3">
+<img src="img/soda.png" class="deco-img img4">
+
+<!-- Estrellitas -->
+<span class="star" style="top:10%; left:15%;">★</span>
+<span class="star" style="top:30%; left:60%;">★</span>
+<span class="star" style="top:70%; left:25%;">★</span>
+<span class="star" style="top:80%; left:80%;">★</span>
+
 <div class="auth-container">
     <h1>Moco</h1>
 
     <!-- LOGIN -->
     <form class="auth-form" id="login-form">
         <input type="email" id="login-email" placeholder="Correo" required>
-        <input type="password" id="login-pass" placeholder="Contraseña" required>
+        <div style="position: relative;">
+            <input type="password" id="login-pass" placeholder="Contraseña" required>
+            <button type="button" class="password-toggle" id="toggle-login-pass">
+                <svg viewBox="0 0 24 24"><path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+        </div>
         <button type="submit">Iniciar sesión</button>
+        <button type="button" id="forgot-password">¿Has olvidado tu contraseña?</button>
     </form>
 
     <!-- REGISTER -->
     <form class="auth-form" id="register-form" style="display:none;">
         <input type="email" id="register-email" placeholder="Correo" required>
-        <input type="password" id="register-pass" placeholder="Contraseña" required>
+        <div style="position: relative;">
+            <input type="password" id="register-pass" placeholder="Contraseña" required>
+            <button type="button" class="password-toggle" id="toggle-register-pass">
+                <svg viewBox="0 0 24 24"><path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+        </div>
         <button type="submit">Registrarse</button>
     </form>
 
@@ -113,32 +186,28 @@
 
 <script type="module">
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    // La sesión se guardará en localStorage
-    console.log("Persistencia activada: localStorage");
-  })
-  .catch((error) => {
-    console.error("Error al activar persistencia:", error);
-  });
-
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+// Persistencia
+setPersistence(auth, browserLocalPersistence).catch(console.error);
 
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const toggleLogin = document.getElementById('toggle-login');
+const loginPassInput = document.getElementById("login-pass");
+const registerPassInput = document.getElementById("register-pass");
+const toggleLoginPass = document.getElementById("toggle-login-pass");
+const toggleRegisterPass = document.getElementById("toggle-register-pass");
+const forgotBtn = document.getElementById("forgot-password");
 
-// Redirigir si ya está logueado
-onAuthStateChanged(auth, user => {
-    if(user) window.location.href = "index.html";
-});
+// Redirigir si ya logueado
+onAuthStateChanged(auth, user => { if(user) window.location.href = "index.html"; });
 
 // Alternar login/register
 toggleLogin.addEventListener('click', () => {
-    if(loginForm.style.display === 'none') {
+    if(loginForm.style.display === 'none'){
         loginForm.style.display = 'flex';
         registerForm.style.display = 'none';
         toggleLogin.textContent = '¿No tienes cuenta? Registrarse';
@@ -152,29 +221,30 @@ toggleLogin.addEventListener('click', () => {
 // LOGIN
 loginForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-    try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        window.location.href = "index.html";
-    } catch(err) {
-        alert(err.message);
-    }
+    try { await signInWithEmailAndPassword(auth, loginForm['login-email'].value, loginForm['login-pass'].value); window.location.href = "index.html"; }
+    catch(err){ alert(err.message); }
 });
 
 // REGISTER
 registerForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const email = document.getElementById('register-email').value;
-    const pass = document.getElementById('register-pass').value;
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-        // Crear documento inicial en Firestore
-        await setDoc(doc(db, "usuarios", userCredential.user.uid), { listas: [], listaActiva: 1 });
+        const userCredential = await createUserWithEmailAndPassword(auth, registerForm['register-email'].value, registerForm['register-pass'].value);
+        await setDoc(doc(db,"usuarios",userCredential.user.uid),{ listas: [], listaActiva: 1 });
         window.location.href = "index.html";
-    } catch(err) {
-        alert(err.message);
-    }
+    } catch(err){ alert(err.message); }
+});
+
+// Mostrar / ocultar contraseña
+toggleLoginPass.addEventListener("click", () => { loginPassInput.type = loginPassInput.type === "password" ? "text" : "password"; });
+toggleRegisterPass.addEventListener("click", () => { registerPassInput.type = registerPassInput.type === "password" ? "text" : "password"; });
+
+// Olvidé contraseña
+forgotBtn.addEventListener("click", async () => {
+    const email = prompt("Introduce tu correo para restablecer la contraseña:");
+    if(!email) return;
+    try { await sendPasswordResetEmail(auth,email); alert("Se ha enviado un email para restablecer tu contraseña."); }
+    catch(err){ alert("Error: "+err.message); }
 });
 </script>
 
