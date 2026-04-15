@@ -6,802 +6,277 @@
 <title>Moco</title>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Gochi+Hand&display=swap" rel="stylesheet">
 <link rel="icon" href="img/logo_moco.png" type="image/png">
-<link rel="stylesheet" href="style.css">
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Pixelify+Sans&display=swap');
 
-:root {
-    /* COLORES */
-    --color-bg: #f5a0a0;
-    --color-primary: #ea958d;
-    --color-primary-hover: #c05858;
-    --color-secondary: #e88a8a;
-    --color-container: #f8d4d4;
-    --color-container-border: #e8a8a8;
-    --color-header: #f0baba;
-    --color-text-dark: #5a3535;
-    --color-text-medium: #7a4a4a;
-    --color-text-light: #c8a8a8;
-    --color-input-border: #e0b0b0;
-    --color-input-border-focus: #c47070;
-    --color-item-border: #ecc0c0;
-    --color-checkbox-border: #daa0a0;
-    --color-checked-bg: rgba(180,220,180,0.5);
-    --color-checked-border: #a8d0a8;
-    --color-checked: #7bc47b;
-    --color-delete: #c48080;
-    --color-delete-hover: #a05050;
-
-    --shadow-soft: 0 15px 50px rgba(0,0,0,0.12);
-    --shadow-button: 0 4px 20px rgba(0,0,0,0.15);
-
-    --radius-large: 35px;
-    --radius-medium: 25px;
-    --radius-small: 18px;
-    --radius-pill: 50px;
-}
-
-/* RESET */
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-    font-family: 'Gochi Hand', cursive; /* contenido general */
-    background: var(--color-bg);
-    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: 100vh;
-    padding: 30px;
-    position: relative;
-    overflow-x: hidden;
-}
-
-/* Títulos y botones en Pixelify Sans */
-.top-header,
-.list-title,
-.list-card-title,
-.section h2,
-.send-btn,
-.open-list-btn,
-.delete-btn,
-.rename-btn,
-.add-list-btn,
-.reset-btn,
-.switch-list,
-.nav-links a,
-.hamburger {
-    font-family: 'Pixelify Sans', sans-serif;
-}
-
-/* Contenido editable con Gochi Hand */
-.section p,
-.item-text,
-.list-preview,
-.input-area input,
-.logo-box {
-    font-family: 'Gochi Hand', cursive;
-}
-
-/* DECORACIONES FIJAS */
-.deco-img { position: fixed; pointer-events: none; z-index: -1; opacity: 0.7; }
-.deco-img.img1 { top:5%; right:5%; width:180px; transform:rotate(5deg); }
-.deco-img.img2 { bottom:5%; right:5%; width:250px; transform:rotate(-5deg); }
-.deco-img.img3 { top:50%; right:10%; width:100px; transform:rotate(0deg); }
-.deco-img.img4 { bottom:20%; left:3%; width:80px; transform:rotate(-10deg); }
-
-.bubble { position: fixed; background:var(--color-secondary); border-radius:15px; z-index:1; }
-.star { position: fixed; color:white; font-size:26px; opacity:0.9; z-index:-2; animation:twinkle 2s infinite; }
-@keyframes twinkle { 0%,100%{opacity:0.6;transform:scale(1);} 50%{opacity:1;transform:scale(1.2);} }
-.circle-deco { position: fixed; border-radius:50%; border:3px solid rgba(255,255,255,0.2); z-index:1; }
-
-/* HEADER */
-.top-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 15px 25px;
-    background: var(--color-container);
-    border-radius: var(--radius-large);
-    border: 3px solid var(--color-container-border);
-    box-shadow: var(--shadow-soft);
-    position: relative;
-    z-index: 10;
-}
-
-/* Logo tipo “botón retro” */
-/* Logo sin fondo, tamaño más contenido */
-.logo-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Gochi Hand', cursive;
-    font-size: 20px;       /* más pequeño */
-    padding: 0;            /* sin padding extra */
-    border-radius: 0;      /* sin fondo, no necesita bordes redondeados */
-    background: transparent; /* quitar color de fondo */
-    color: var(--color-text-dark); /* color de texto */
-    box-shadow: none;      /* quitar sombra */
-    border: none;          /* sin borde */
-    cursor: default;
-}
-
-.logo-box .logo-img {
-    height: 30px;           /* ajustar tamaño de imagen */
-    width: auto;
-}
-
-
-/* Links tipo botón retro */
-.nav-links {
-    display: flex;
-    gap: 15px;
-}
-.nav-links a {
-    text-decoration: none;
-    font-weight: 600;
-    color: var(--color-text-dark);
-    transition: 0.3s;
-    font-size: 16px;
-    padding: 8px 14px;
-    border-radius: var(--radius-pill);
-    border: 2px solid var(--color-container-border);
-    background: var(--color-primary);
-    color: white;
-    text-align: center;
-}
-.nav-links a:hover {
-    background: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
-    transform: translateY(-2px);
-}
-
-.hamburger {
-    display:none;
-    font-size:30px;
-    background:var(--color-primary);
-    color:white;
-    border:none;
-    border-radius:10px;
-    padding:8px 12px;
-    cursor:pointer;
-    z-index:140 !important;
-}
-
-/* Overlay para móvil */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.3);
-    display: none;
-    z-index: 150; /* entre contenido y menú */
-    pointer-events: auto; /* captura clicks */
-}
-
-/* ===================== SIDEBAR ===================== */
-.nav-links {
-    z-index: 200; /* siempre arriba del overlay */
-    position: relative;
-}
-
-/* PANEL CENTRAL */
-.center-panel { display:flex; flex-direction:column; margin-top:20px; }
-
-.list-container {
-    background: var(--color-container); border-radius: var(--radius-large);
-    box-shadow: var(--shadow-soft), inset 0 2px 0 rgba(255,255,255,0.4);
-    border:3px solid var(--color-container-border); overflow:hidden; display:flex; flex-direction:column; max-height:550px;
-}
-
-.list-header { background: var(--color-header); padding:18px 28px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--color-container-border); }
-.list-title { font-family:'Pixelify Sans', sans-serif; font-weight:800; font-size:16px; color:var(--color-text-dark); text-transform:uppercase; letter-spacing:3px; }
-.header-dots { display:flex; gap:8px; }
-.dot { width:14px; height:14px; background:var(--color-container); border-radius:50%; border:2px solid var(--color-checkbox-border); }
-
-.list-content { padding:18px; flex:1; overflow-y:auto; }
-.list-content::-webkit-scrollbar { width:6px; }
-.list-content::-webkit-scrollbar-thumb { background:var(--color-checkbox-border); border-radius:10px; }
-
-.list-item { display:flex; align-items:center; gap:14px; padding:14px 20px; background:rgba(255,255,255,0.75); border-radius:var(--radius-pill); margin-bottom:12px; border:2.5px solid var(--color-item-border); transition:all 0.3s; }
-.list-item:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
-.list-item.checked { background: var(--color-checked-bg); border-color:var(--color-checked-border); }
-
-.item-checkbox { width:24px; height:24px; border:3px solid var(--color-checkbox-border); border-radius:10px; background:white; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s; flex-shrink:0; }
-.list-item.checked .item-checkbox { background: var(--color-checked); border-color:var(--color-checked); }
-.list-item.checked .item-checkbox::after { content:'✓'; color:white; font-weight:800; font-size:14px; }
-
-.item-text { flex:1; font-size:18px; font-weight:600; color:var(--color-text-dark); font-family:'Gochi Hand', cursive; }
-.list-item.checked .item-text { text-decoration:line-through; color:#a0a0a0; }
-
-.delete-btn {
-    opacity: 0.8;
-    background: var(--color-delete);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size:18px;
-    font-family: 'Gochi Hand', cursive;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-.list-item:hover .delete-btn {
-    opacity: 1;
-    transform: scale(1.1);
-    background: var(--color-delete-hover);
-}
-
-/* Botón de borrar en la lista principal (círculo pequeño) */
-.list-item .delete-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    padding: 0;
-    font-size: 18px;
-}
-
-/* Botones dentro de list-card (abrir, borrar, renombrar) */
-.list-card .delete-btn,
-.list-card .open-list-btn,
-.list-card .rename-btn {
-    width: 100%;
-    border-radius: var(--radius-pill);
-    padding: 8px 12px;
-    font-size:14px;
-}
-
-/* INPUT AREA CORREGIDO */
-.input-area {
-    display: flex;
-    gap: 10px;
-    padding: 18px;
-    background: rgba(255,255,255,0.35);
-    border-radius: var(--radius-pill);
-    flex-wrap: wrap;
-    justify-content: space-between;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-.input-area input {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 16px 24px;
-    border: 3px solid var(--color-input-border);
-    border-radius: var(--radius-medium);
-    font-family: 'Gochi Hand', cursive;
-    font-size:16px;
-    background: white;
-    color: var(--color-text-dark);
-    outline: none;
-    box-sizing: border-box;
-}
-
-.send-btn {
-    flex: 0 0 auto;
-    min-width: 80px;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 16px 24px;
-    border-radius: var(--radius-medium);
-    font-family: 'Gochi Hand', cursive;
-    font-weight: 700;
-    font-size:16px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: lowercase;
-}
-
-.send-btn:hover { background:var(--color-primary-hover); transform:scale(1.05); }
-
-.list-footer { background:var(--color-header); padding:14px 25px; border-top:3px solid var(--color-container-border); font-size:14px; color:var(--color-text-medium); display:flex; justify-content:space-between; align-items:center; }
-.reset-btn { background:var(--color-primary); color:white; border:none; padding:8px 16px; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:0.3s; }
-.reset-btn:hover { background:var(--color-primary-hover); }
-
-/* SECCIONES */
-.section {
-    display: none;
-    background: var(--color-container);
-    border: 3px solid var(--color-container-border);
-    border-radius: var(--radius-large);
-    box-shadow: var(--shadow-soft);
-    padding: 40px 30px;
-    margin-top: 30px;
-    position: relative;
-    overflow: hidden;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px);
-    background-size: 30px 30px;
-}
-.section.active { display: block; }
-.section h2 { font-family: 'Pixelify Sans', sans-serif; font-size:36px; color: var(--color-text-dark); text-align: center; margin-bottom: 20px; }
-.section p { font-family: 'Gochi Hand', cursive; font-size:18px; color: var(--color-text-medium); text-align: center; max-width: 600px; margin: 0 auto 30px; }
-
-/* BOTONES DE LISTAS MULTIPLES */
-.lista-selector { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
-.switch-list { background:var(--color-primary); color:white; border:none; padding:12px 20px; border-radius:25px; cursor:pointer; transition:0.3s; font-family:'Gochi Hand', cursive; font-size:16px; }
-.switch-list:hover, .switch-list.active { background:var(--color-primary-hover); transform:scale(1.05); }
-
-/* MULTI-LISTS / PREVIEW CARDS */
-.multi-lists-container {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-.list-card {
-    background: var(--color-container);
-    border: 3px solid var(--color-container-border);
-    border-radius: var(--radius-medium);
-    padding: 12px;
-    width: 140px;
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    transition: transform 0.3s;
-}
-.list-card:hover { transform: translateY(-5px); }
-
-.list-card-title {
-    font-family: 'Pixelify Sans', sans-serif;
-    font-weight: 700;
-    font-size:16px;
-    color: var(--color-text-dark);
-    margin-bottom: 8px;
-    text-align: center;
-}
-
-.list-preview {
-    background: rgba(255,255,255,0.5);
-    border-radius: var(--radius-small);
-    width: 100%;
-    height: 50px;
-    overflow: hidden;
-    font-family: 'Gochi Hand', cursive;
-    font-size:14px;
-    padding: 4px;
-    margin-bottom: 8px;
-}
-.list-preview span { display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
-
-/* BOTONES DENTRO DE LIST CARD */
-.open-list-btn, .delete-btn, .rename-btn {
-    font-family: 'Gochi Hand', cursive;
-    font-size:14px;
-    padding: 8px 12px;
-    border-radius: var(--radius-pill);
-    cursor: pointer;
-    border: none;
-    width: 100%;
-    transition: 0.3s;
-    text-align: center;
-}
-
-.open-list-btn {
-    background: var(--color-primary);
-    color: white;
-}
-.open-list-btn:hover { background: var(--color-primary-hover); }
-
-.delete-btn {
-    background: var(--color-delete);
-    color: white;
-}
-.delete-btn:hover {
-    background: var(--color-delete-hover);
-    transform: scale(1.05);
-}
-
-.rename-btn {
-    background: var(--color-secondary);
-    color: white;
-}
-.rename-btn:hover { background: var(--color-primary-hover); }
-
-.add-list-btn {
-    background: var(--color-secondary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-pill);
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size:16px;
-}
-.add-list-btn:hover { background: var(--color-primary-hover); }
-.add-list-btn.disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* RESPONSIVE MÓVIL */
-@media (max-width: 480px) {
-    /* Header y botón hamburguesa */
-    .top-header { position: relative; z-index: 300; }
-    .hamburger { display: block; z-index: 350 !important; }
-
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -220px;
-        flex-direction: column;
-        background: var(--color-container);
-        height: 100%;
-        width: 200px;
-        padding: 70px 20px;
-        gap: 20px;
-        transition: right 0.3s ease;
-        overflow-y: auto;
-        border-left: 3px solid var(--color-container-border);
-        border-radius: 0 0 0 20px;
-        z-index: 310;
-    }
-    .nav-links.open { right: 0; }
-    .overlay { z-index: 200; pointer-events: auto; }
-  .nav-links.open + .hamburger,
-    .hamburger.open { 
-        display: none;
-    }
-    .list-container { max-height: 400px; margin: 0 10px; }
-
-    /* Input area */
-    .input-area { 
-        flex-direction: column; 
-        align-items: stretch; 
-        margin: 0 10px 10px 10px; 
-        gap: 8px; 
-        width: calc(100% - 20px); 
-        box-sizing: border-box; 
-    }
-    .input-area input { width: 100%; padding: 12px 18px; box-sizing: border-box; font-size:14px; }
-    .send-btn { width: 100%; max-width: 120px; padding: 10px 16px; font-size:14px; text-align: center; align-self: center; }
-
-    /* List items ajustados */
-    .list-item { padding: 10px 14px; gap: 10px; }
-    .item-text { font-size: 14px; }
-    .item-checkbox { width: 20px; height: 20px; border-width: 2px; }
-    .list-item .delete-btn { width: 24px; height: 24px; font-size: 14px; }
-
-    /* Botones dentro de list-card y multi-lists */
-    .list-card .open-list-btn,
-    .list-card .delete-btn,
-    .list-card .rename-btn,
-    .add-list-btn,
-    .switch-list {
-        font-size: 12px;
-        padding: 5px 10px;
+    :root {
+        --color-bg: #f5a0a0;
+        --color-primary: #ea958d;
+        --color-primary-hover: #c05858;
+        --color-secondary: #e88a8a;
+        --color-container: #f8d4d4;
+        --color-container-border: #e8a8a8;
+        --color-header: #f0baba;
+        --color-text-dark: #5a3535;
+        --color-text-medium: #7a4a4a;
+        --color-text-light: #c8a8a8;
+        --color-input-border: #e0b0b0;
+        --color-checked-bg: rgba(180,220,180,0.5);
+        --color-checked-border: #a8d0a8;
+        --color-checked: #7bc47b;
+        --color-delete: #c48080;
+        --color-delete-hover: #a05050;
+        --radius-large: 35px;
+        --radius-medium: 25px;
+        --radius-pill: 50px;
+        --shadow-soft: 0 15px 50px rgba(0,0,0,0.12);
     }
 
-    .center-panel { margin-top: 15px; }
-    .multi-lists-container { gap: 10px; }
-    .list-card { width: 120px; }
-    .list-preview { height: 40px; font-size: 12px; }
-}
+    * { margin:0; padding:0; box-sizing:border-box; }
 
+    body {
+        font-family: 'Gochi Hand', cursive;
+        background: var(--color-bg);
+        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    /* HEADER */
+    .top-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 15px 25px; background: var(--color-container);
+        border-radius: var(--radius-large); border: 3px solid var(--color-container-border);
+        box-shadow: var(--shadow-soft); position: relative; z-index: 10;
+    }
+
+    .logo-box { display: flex; align-items: center; gap: 8px; font-family: 'Pixelify Sans', sans-serif; font-size: 20px; color: var(--color-text-dark); }
+    .logo-box img { height: 35px; }
+
+    .nav-links { display: flex; gap: 10px; }
+    .nav-links a {
+        text-decoration: none; font-family: 'Pixelify Sans', sans-serif;
+        padding: 8px 15px; border-radius: var(--radius-pill);
+        background: var(--color-primary); color: white; border: 2px solid var(--color-container-border);
+        font-size: 14px; transition: 0.3s; cursor: pointer;
+    }
+    .nav-links a:hover { background: var(--color-primary-hover); transform: translateY(-2px); }
+
+    /* BOTONES ESPECIALES DE SESIÓN */
+    #login-btn { background: #7bc47b; }
+    #logout-btn { background: #c48080; display: none; }
+
+    /* SECCIONES */
+    .section { display: none; background: var(--color-container); border: 3px solid var(--color-container-border); border-radius: var(--radius-large); padding: 30px; margin-top: 20px; box-shadow: var(--shadow-soft); }
+    .section.active { display: block; }
+    .section h2 { font-family: 'Pixelify Sans', sans-serif; text-align: center; margin-bottom: 20px; color: var(--color-text-dark); }
+
+    /* LISTA UI */
+    .list-container { background: rgba(255,255,255,0.2); border-radius: var(--radius-medium); overflow: hidden; border: 2px solid var(--color-container-border); }
+    .list-header { background: var(--color-header); padding: 15px; display: flex; justify-content: space-between; font-family: 'Pixelify Sans'; }
+    .list-content { padding: 15px; min-height: 100px; }
+    .list-item { display: flex; align-items: center; gap: 10px; background: white; padding: 10px 15px; border-radius: var(--radius-pill); margin-bottom: 8px; border: 1px solid var(--color-container-border); }
+    .list-item.checked { background: var(--color-checked-bg); }
+    .item-checkbox { width: 20px; height: 20px; border: 2px solid var(--color-checkbox-border); border-radius: 5px; cursor: pointer; }
+    .checked .item-checkbox { background: var(--color-checked); }
+    .item-text { flex: 1; font-size: 18px; }
+    .checked .item-text { text-decoration: line-through; color: gray; }
+
+    .input-area { display: flex; gap: 10px; padding: 15px; }
+    .input-area input { flex: 1; padding: 10px; border-radius: 15px; border: 2px solid var(--color-input-border); font-family: 'Gochi Hand'; }
+    .send-btn { background: var(--color-primary); border: none; color: white; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-family: 'Pixelify Sans'; }
+
+    .multi-lists-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+    .list-card { background: white; border: 2px solid var(--color-container-border); padding: 15px; border-radius: 20px; width: 150px; text-align: center; }
+    .list-card-title { font-family: 'Pixelify Sans'; margin-bottom: 10px; }
+    .open-list-btn { background: var(--color-primary); color: white; border: none; padding: 5px 10px; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 5px; }
+    .delete-btn { background: var(--color-delete); color: white; border: none; padding: 5px; border-radius: 50%; cursor: pointer; width: 25px; height: 25px; }
+
+    @media (max-width: 480px) {
+        .nav-links { position: fixed; top: 80px; right: -200px; flex-direction: column; background: var(--color-container); padding: 20px; border-radius: 20px; transition: 0.3s; }
+        .nav-links.open { right: 20px; }
+    }
 </style>
 </head>
 <body>
 
-<!-- Overlay para móvil -->
-<div class="overlay" id="overlay"></div>
+<div class="overlay" id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); z-index:5;"></div>
 
-<!-- DECORACIONES -->
-<div class="bubble b1"></div>
-<div class="bubble b2"></div>
-<div class="bubble b3"></div>
-<div class="bubble b4"></div>
-<div class="bubble b5"></div>
-
-<span class="star" style="top:8%;left:30%">✦</span>
-<span class="star" style="top:20%;right:20%;animation-delay:0.3s">✧</span>
-<span class="star" style="top:50%;right:15%;animation-delay:0.7s">✦</span>
-<span class="star" style="bottom:30%;right:25%;animation-delay:1s">✧</span>
-<span class="star" style="bottom:20%;left:20%;animation-delay:0.5s">✦</span>
-<span class="star" style="top:65%;left:10%;animation-delay:1.2s">✧</span>
-
-<div class="circle-deco c1"></div>
-<div class="circle-deco c2"></div>
-<div class="circle-deco c3"></div>
-
-<img src="img/flan.png" class="deco-img img1" alt="">
-<img src="img/jellyfish.png" class="deco-img img2" alt="">
-<img src="img/macaron.png" class="deco-img img3" alt="">
-<img src="img/soda.png" class="deco-img img4" alt="">
-
-<!-- HEADER -->
 <header class="top-header">
     <div class="logo-box">
-        <img src="img/logo_moco.png" class="logo-img">
+        <img src="img/logo_moco.png" alt="logo">
         <span>MOCO MOCO</span>
     </div>
-    <div class="nav-center">
-        <nav class="nav-links">
-            <a href="#" data-section="home">Home</a>
-            <a href="#" data-section="listas">Listas</a>
-            <a href="#" data-section="sobre">Sobre Moco</a>
-        </nav>
-    </div>
-    <button class="hamburger" id="hamburger">☰</button>
+    <nav class="nav-links" id="nav-menu">
+        <a href="#" data-section="home">Home</a>
+        <a href="#" data-section="listas">Listas</a>
+        <a href="#" data-section="sobre">Sobre</a>
+        <a id="login-btn">Entrar</a>
+        <a id="logout-btn">Salir</a>
+    </nav>
+    <button class="hamburger" id="hamburger" style="background:none; border:none; font-size:24px; cursor:pointer;">☰</button>
 </header>
 
-<!-- SECCIONES -->
 <main>
-    <!-- HOME -->
     <section id="home" class="section active">
-        <div class="center-panel">
-            <div class="list-container">
-                <div class="list-header">
-                    <span class="list-title">Mi Lista Actual</span>
-                    <div class="header-dots">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
-                </div>
-                <div class="list-content" id="lista"></div>
-                <div class="input-area">
-                    <input type="text" id="item" placeholder="añadir producto...">
-                    <button class="send-btn" id="add">send</button>
-                </div>
-                <div class="list-footer">
-                    <span>Copyright ©Allium</span>
-                    <button class="reset-btn" id="reset-btn">reset</button>
-                </div>
+        <div class="list-container">
+            <div class="list-header">
+                <span class="list-title">Mi Lista Actual</span>
+            </div>
+            <div class="list-content" id="lista"></div>
+            <div class="input-area">
+                <input type="text" id="item" placeholder="añadir algo...">
+                <button class="send-btn" id="add">enviar</button>
             </div>
         </div>
     </section>
 
-    <!-- LISTAS -->
     <section id="listas" class="section">
-        <div class="center-panel">
-            <h2>Mis Listas</h2>
-            <div class="multi-lists-section">
-                <div class="multi-lists-container" id="multi-lists-container"></div>
-                <button class="add-list-btn" id="add-list-btn">+ Nueva lista</button>
-            </div>
-        </div>
+        <h2>Mis Listas</h2>
+        <div class="multi-lists-container" id="multi-lists-container"></div>
+        <button id="add-list-btn" class="send-btn" style="margin: 20px auto; display: block;">+ Nueva Lista</button>
     </section>
 
-    <!-- SOBRE MOCO -->
     <section id="sobre" class="section">
-        <div class="center-panel">
-            <h2>Sobre Moco</h2>
-            <p>
-                Bienvenido a Moco, tu aplicación de confianza para gestionar listas de la compra, 
-                ¿Sabías que si no registras lo que tienes intención de comprar en el súper <br>
-                es muy probable que te dejes entre dos y cuatro productos? 
-            </p>
-            <p>¡Diviértete organizando tus listas y manteniendo todo bajo control!</p>
-        </div>
+        <h2>Sobre Moco</h2>
+        <p style="text-align:center;">Tu app de listas favorita.</p>
     </section>
 </main>
 
-<!-- JS -->
 <script type="module">
-// 1. IMPORTS (Todos juntos al principio)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-// 2. CONFIGURACIÓN
 const firebaseConfig = {
     apiKey: "AIzaSyBG1xwk7n863tpk7FYUBhOTEs-4HO1ht64",
     authDomain: "mocomoco-39b6c.firebaseapp.com",
     projectId: "mocomoco-39b6c",
     storageBucket: "mocomoco-39b6c.appspot.com",
     messagingSenderId: "546259757508",
-    appId: "1:546259757508:web:fd26534abafb1609475c91",
-    measurementId: "G-EWGLDYYSF4"
+    appId: "1:546259757508:web:fd26534abafb1609475c91"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-// 3. VARIABLES DE ESTADO
 let listas = [];
 let listaActiva = null;
-let premium = false; 
+let unsub = null;
 
-// 4. GUARDAR DATOS (Sincroniza Local + Firebase)
-async function guardarDatos() {
+// --- LÓGICA DE USUARIO ---
+onAuthStateChanged(auth, (user) => {
+    const lBtn = document.getElementById("login-btn");
+    const sBtn = document.getElementById("logout-btn");
 
-    if (auth.currentUser) {
-        const docRef = doc(db, "usuarios", auth.currentUser.uid);
-        try {
-            await updateDoc(docRef, { listas, listaActiva });
-        } catch (e) {
-            // Si el documento no existe aún, lo creamos con setDoc
-            await setDoc(docRef, { listas, listaActiva });
-        }
-    }
-}
-
-// 5. CONTROL DE AUTENTICACIÓN (Cross-device)
-onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const docRef = doc(db, "usuarios", user.uid);
-
-        // Escuchar cambios en tiempo real desde cualquier dispositivo
-        onSnapshot(docRef, (snap) => {
+        lBtn.style.display = "none";
+        sBtn.style.display = "block";
+        unsub = onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
             if (snap.exists()) {
-                const data = snap.data();
-                listas = data.listas || [];
-                listaActiva = data.listaActiva || (listas.length > 0 ? listas[0].id : null);
-                
-                // Actualizar cache local y UI
-                localStorage.setItem("listas", JSON.stringify(listas));
-                localStorage.setItem("listaActiva", listaActiva);
-                
-                renderListaCards();
-                renderHome();
+                listas = snap.data().listas || [];
+                listaActiva = snap.data().listaActiva || (listas[0]?.id);
             } else {
-                // Si es un usuario nuevo sin datos, crear lista inicial
-                listas = [{ id: Date.now(), titulo: "Mi primera lista", items: [] }];
+                listas = [{ id: Date.now(), titulo: "Mi Lista", items: [] }];
                 listaActiva = listas[0].id;
-                guardarDatos();
+                guardar();
             }
+            render();
         });
     } else {
-        // Si no hay sesión, mandamos al login
-        window.location.href = "auth.html";
+        lBtn.style.display = "block";
+        sBtn.style.display = "none";
+        if (unsub) unsub();
+        listas = [{ id: Date.now(), titulo: "Invitado", items: [] }];
+        listaActiva = listas[0].id;
+        render();
     }
 });
 
-// 6. FUNCIONES DE UI (Igual que las tuyas pero optimizadas)
-function renderListaCards() {
-    const cont = document.getElementById("multi-lists-container");
-    if (!cont) return;
-    cont.innerHTML = "";
+// --- ACCIONES ---
+document.getElementById("login-btn").onclick = () => signInWithPopup(auth, provider);
+document.getElementById("logout-btn").onclick = () => signOut(auth).then(() => location.reload());
 
-    listas.forEach(lista => {
-        const card = document.createElement("div");
-        card.className = "list-card";
-        card.innerHTML = `
-            <div class="list-card-title">${lista.titulo}</div>
-            <div class="list-preview">
-                ${lista.items.length === 0 ? "<span>Vacía...</span>" : lista.items.slice(0, 3).map(i => `<span>${i.texto}</span>`).join("")}
-            </div>
-            <button class="open-list-btn">Abrir</button>
-            <button class="rename-btn">Cambiar nombre</button>
-            <button class="delete-btn">×</button>
-        `;
-
-        card.querySelector(".open-list-btn").onclick = () => {
-            listaActiva = lista.id;
-            guardarDatos();
-            document.querySelector('[data-section="home"]').click(); // Ir a home al abrir
-        };
-
-        card.querySelector(".delete-btn").onclick = () => eliminarLista(lista.id);
-        
-        card.querySelector(".rename-btn").onclick = () => {
-            const nuevoNombre = prompt("Nuevo nombre:", lista.titulo);
-            if(nuevoNombre) {
-                lista.titulo = nuevoNombre;
-                guardarDatos();
-            }
-        };
-
-        cont.appendChild(card);
-    });
-
-    const fixedBtn = document.getElementById("add-list-btn");
-    if (fixedBtn) fixedBtn.disabled = !premium && listas.length >= 3;
+async function guardar() {
+    if (auth.currentUser) {
+        await setDoc(doc(db, "usuarios", auth.currentUser.uid), { listas, listaActiva }, { merge: true });
+    }
 }
 
-function eliminarLista(id) {
-    if (listas.length <= 1) return alert("No puedes borrar la única lista.");
-    if (confirm("¿Borrar esta lista?")) {
-        listas = listas.filter(l => l.id !== id);
-        if (listaActiva === id) listaActiva = listas[0].id;
-        guardarDatos();
-    }
+function render() {
+    renderHome();
+    renderListas();
 }
 
 function renderHome() {
     const lista = listas.find(l => l.id === listaActiva);
-    if (!lista) return;
-
-    const homeTitle = document.querySelector(".list-title");
-    if (homeTitle) homeTitle.textContent = lista.titulo;
-
     const cont = document.getElementById("lista");
-    if (!cont) return;
+    if (!lista || !cont) return;
+    document.querySelector(".list-title").textContent = lista.titulo;
     cont.innerHTML = "";
-
     lista.items.forEach((item, index) => {
         const div = document.createElement("div");
         div.className = `list-item ${item.check ? "checked" : ""}`;
-        div.innerHTML = `
-            <div class="item-checkbox"></div>
-            <div class="item-text">${item.texto}</div>
-            <button class="delete-btn">×</button>
-        `;
-        div.querySelector(".item-checkbox").onclick = () => {
-            item.check = !item.check;
-            guardarDatos();
-        };
-        div.querySelector(".delete-btn").onclick = () => {
-            lista.items.splice(index, 1);
-            guardarDatos();
-        };
+        div.innerHTML = `<div class="item-checkbox"></div><div class="item-text">${item.texto}</div><button class="delete-btn">×</button>`;
+        div.querySelector(".item-checkbox").onclick = () => { item.check = !item.check; guardar(); };
+        div.querySelector(".delete-btn").onclick = () => { lista.items.splice(index, 1); guardar(); };
         cont.appendChild(div);
     });
-
-    // Inputs
-    document.getElementById("add").onclick = () => añadirItem(lista);
-    document.getElementById("item").onkeydown = (e) => { if (e.key === "Enter") añadirItem(lista); };
 }
 
-function añadirItem(lista) {
-    const input = document.getElementById("item");
-    const texto = input.value.trim();
-    if (!texto) return;
-    lista.items.push({ texto, check: false });
-    input.value = "";
-    guardarDatos();
+function renderListas() {
+    const cont = document.getElementById("multi-lists-container");
+    if (!cont) return;
+    cont.innerHTML = "";
+    listas.forEach(l => {
+        const card = document.createElement("div");
+        card.className = "list-card";
+        card.innerHTML = `<div class="list-card-title">${l.titulo}</div><button class="open-list-btn">Abrir</button>`;
+        card.querySelector(".open-list-btn").onclick = () => { listaActiva = l.id; guardar(); document.querySelector('[data-section="home"]').click(); };
+        cont.appendChild(card);
+    });
 }
 
-// 7. INICIALIZACIÓN DE NAVEGACIÓN Y SIDEBAR
-document.addEventListener("DOMContentLoaded", () => {
-    setupNavegacion();
-    setupSidebar();
-    
-    document.getElementById("add-list-btn").onclick = () => {
-        if (!premium && listas.length >= 3) return alert("Límite de 3 listas alcanzado.");
-        const nueva = { id: Date.now(), titulo: `Lista ${listas.length + 1}`, items: [] };
-        listas.push(nueva);
-        listaActiva = nueva.id;
-        guardarDatos();
-    };
+document.getElementById("add").onclick = () => {
+    const val = document.getElementById("item").value;
+    const lista = listas.find(l => l.id === listaActiva);
+    if (val && lista) {
+        lista.items.push({ texto: val, check: false });
+        document.getElementById("item").value = "";
+        guardar();
+    }
+};
 
-    document.getElementById("reset-btn").onclick = () => {
-        const lista = listas.find(l => l.id === listaActiva);
-        if (lista && confirm("¿Vaciar lista?")) {
-            lista.items = [];
-            guardarDatos();
-        }
+document.getElementById("add-list-btn").onclick = () => {
+    if(!auth.currentUser) return alert("Inicia sesión para crear listas.");
+    const n = { id: Date.now(), titulo: "Nueva Lista", items: [] };
+    listas.push(n);
+    listaActiva = n.id;
+    guardar();
+};
+
+// Navegación
+document.querySelectorAll(".nav-links a[data-section]").forEach(a => {
+    a.onclick = () => {
+        document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+        document.getElementById(a.dataset.section).classList.add("active");
+        document.getElementById("nav-menu").classList.remove("open");
+        document.getElementById("overlay").style.display = "none";
     };
 });
 
-// Funciones de navegación (iguales a las tuyas)
-function setupNavegacion() {
-    const links = document.querySelectorAll(".nav-links a");
-    const secciones = document.querySelectorAll(".section");
-    links.forEach(link => {
-        link.onclick = (e) => {
-            e.preventDefault();
-            secciones.forEach(s => s.classList.remove("active"));
-            document.getElementById(link.dataset.section).classList.add("active");
-            document.querySelector(".nav-links").classList.remove("open");
-            document.getElementById("overlay").style.display = "none";
-        };
-    });
-}
-
-function setupSidebar() {
-    const hamb = document.getElementById("hamburger");
-    const nav = document.querySelector(".nav-links");
-    const overlay = document.getElementById("overlay");
-    hamb.onclick = () => {
-        nav.classList.add("open");
-        overlay.style.display = "block";
-    };
-    overlay.onclick = () => {
-        nav.classList.remove("open");
-        overlay.style.display = "none";
-    };
-}
+// Hamburguesa
+document.getElementById("hamburger").onclick = () => {
+    document.getElementById("nav-menu").classList.toggle("open");
+    document.getElementById("overlay").style.display = "block";
+};
+document.getElementById("overlay").onclick = () => {
+    document.getElementById("nav-menu").classList.remove("open");
+    document.getElementById("overlay").style.display = "none";
+};
 </script>
 </body>
 </html>
