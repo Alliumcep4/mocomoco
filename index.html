@@ -614,9 +614,7 @@ let premium = false;
 
 // 4. GUARDAR DATOS (Sincroniza Local + Firebase)
 async function guardarDatos() {
-    localStorage.setItem("listas", JSON.stringify(listas));
-    localStorage.setItem("listaActiva", listaActiva);
-    
+
     if (auth.currentUser) {
         const docRef = doc(db, "usuarios", auth.currentUser.uid);
         try {
