@@ -13,21 +13,11 @@
         --color-bg: #f5a0a0;
         --color-primary: #ea958d;
         --color-primary-hover: #c05858;
-        --color-secondary: #e88a8a;
         --color-container: #f8d4d4;
         --color-container-border: #e8a8a8;
         --color-header: #f0baba;
         --color-text-dark: #5a3535;
-        --color-text-medium: #7a4a4a;
-        --color-text-light: #c8a8a8;
-        --color-input-border: #e0b0b0;
-        --color-checked-bg: rgba(180,220,180,0.5);
-        --color-checked-border: #a8d0a8;
-        --color-checked: #7bc47b;
-        --color-delete: #c48080;
-        --color-delete-hover: #a05050;
         --radius-large: 35px;
-        --radius-medium: 25px;
         --radius-pill: 50px;
         --shadow-soft: 0 15px 50px rgba(0,0,0,0.12);
     }
@@ -37,110 +27,107 @@
     body {
         font-family: 'Gochi Hand', cursive;
         background: var(--color-bg);
-        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        background-size: 20px 20px;
         min-height: 100vh;
-        padding: 20px;
+        padding: 15px;
     }
 
     /* HEADER */
     .top-header {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 15px 25px; background: var(--color-container);
+        padding: 12px 20px; background: var(--color-container);
         border-radius: var(--radius-large); border: 3px solid var(--color-container-border);
-        box-shadow: var(--shadow-soft); position: relative; z-index: 10;
+        box-shadow: var(--shadow-soft); position: relative; z-index: 1000;
     }
 
-    .logo-box { display: flex; align-items: center; gap: 8px; font-family: 'Pixelify Sans', sans-serif; font-size: 20px; color: var(--color-text-dark); }
-    .logo-box img { height: 35px; }
+    .logo-box { display: flex; align-items: center; gap: 8px; font-family: 'Pixelify Sans', sans-serif; font-size: 18px; color: var(--color-text-dark); }
+    .logo-box img { height: 30px; }
 
     .nav-links { display: flex; gap: 10px; }
     .nav-links a {
         text-decoration: none; font-family: 'Pixelify Sans', sans-serif;
-        padding: 8px 15px; border-radius: var(--radius-pill);
+        padding: 8px 14px; border-radius: var(--radius-pill);
         background: var(--color-primary); color: white; border: 2px solid var(--color-container-border);
-        font-size: 14px; transition: 0.3s; cursor: pointer;
+        font-size: 13px; cursor: pointer; transition: 0.3s;
     }
-    .nav-links a:hover { background: var(--color-primary-hover); transform: translateY(-2px); }
 
-    /* BOTONES ESPECIALES DE SESIÓN */
     #login-btn { background: #7bc47b; }
     #logout-btn { background: #c48080; display: none; }
 
     /* SECCIONES */
-    .section { display: none; background: var(--color-container); border: 3px solid var(--color-container-border); border-radius: var(--radius-large); padding: 30px; margin-top: 20px; box-shadow: var(--shadow-soft); }
+    .section { display: none; background: var(--color-container); border: 3px solid var(--color-container-border); border-radius: var(--radius-large); padding: 25px; margin-top: 20px; }
     .section.active { display: block; }
-    .section h2 { font-family: 'Pixelify Sans', sans-serif; text-align: center; margin-bottom: 20px; color: var(--color-text-dark); }
 
-    /* LISTA UI */
-    .list-container { background: rgba(255,255,255,0.2); border-radius: var(--radius-medium); overflow: hidden; border: 2px solid var(--color-container-border); }
-    .list-header { background: var(--color-header); padding: 15px; display: flex; justify-content: space-between; font-family: 'Pixelify Sans'; }
-    .list-content { padding: 15px; min-height: 100px; }
-    .list-item { display: flex; align-items: center; gap: 10px; background: white; padding: 10px 15px; border-radius: var(--radius-pill); margin-bottom: 8px; border: 1px solid var(--color-container-border); }
-    .list-item.checked { background: var(--color-checked-bg); }
-    .item-checkbox { width: 20px; height: 20px; border: 2px solid var(--color-checkbox-border); border-radius: 5px; cursor: pointer; }
-    .checked .item-checkbox { background: var(--color-checked); }
-    .item-text { flex: 1; font-size: 18px; }
-    .checked .item-text { text-decoration: line-through; color: gray; }
+    /* LISTA */
+    .list-container { background: rgba(255,255,255,0.3); border-radius: 25px; border: 2px solid var(--color-container-border); overflow: hidden; }
+    .list-header { background: var(--color-header); padding: 15px; text-align: center; font-family: 'Pixelify Sans'; font-weight: bold; color: var(--color-text-dark); }
+    .list-content { padding: 15px; min-height: 150px; }
+    .list-item { display: flex; align-items: center; gap: 10px; background: white; padding: 12px; border-radius: 20px; margin-bottom: 8px; border: 1px solid #eee; }
+    .list-item.checked { background: #dff0df; opacity: 0.8; }
+    .item-checkbox { width: 22px; height: 22px; border: 2px solid #ccc; border-radius: 6px; cursor: pointer; flex-shrink: 0; }
+    .checked .item-checkbox { background: #7bc47b; border-color: #7bc47b; position: relative; }
+    .checked .item-checkbox::after { content: '✓'; color: white; position: absolute; left: 4px; top: -2px; font-size: 16px; }
+    .item-text { flex: 1; font-size: 18px; color: var(--color-text-dark); }
+    .checked .item-text { text-decoration: line-through; color: #888; }
+    .delete-btn { background: #ffb3b3; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; color: #900; font-weight: bold; }
 
-    .input-area { display: flex; gap: 10px; padding: 15px; }
-    .input-area input { flex: 1; padding: 10px; border-radius: 15px; border: 2px solid var(--color-input-border); font-family: 'Gochi Hand'; }
-    .send-btn { background: var(--color-primary); border: none; color: white; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-family: 'Pixelify Sans'; }
+    .input-area { display: flex; gap: 8px; padding: 15px; }
+    .input-area input { flex: 1; padding: 12px; border-radius: 15px; border: 2px solid var(--color-container-border); font-family: 'Gochi Hand'; font-size: 16px; outline: none; }
+    .send-btn { background: var(--color-primary); color: white; border: none; padding: 0 20px; border-radius: 15px; font-family: 'Pixelify Sans'; cursor: pointer; }
 
-    .multi-lists-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .list-card { background: white; border: 2px solid var(--color-container-border); padding: 15px; border-radius: 20px; width: 150px; text-align: center; }
-    .list-card-title { font-family: 'Pixelify Sans'; margin-bottom: 10px; }
-    .open-list-btn { background: var(--color-primary); color: white; border: none; padding: 5px 10px; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 5px; }
-    .delete-btn { background: var(--color-delete); color: white; border: none; padding: 5px; border-radius: 50%; cursor: pointer; width: 25px; height: 25px; }
-
-    @media (max-width: 480px) {
-        .nav-links { position: fixed; top: 80px; right: -200px; flex-direction: column; background: var(--color-container); padding: 20px; border-radius: 20px; transition: 0.3s; }
-        .nav-links.open { right: 20px; }
+    /* MOBILE NAVIGATION */
+    @media (max-width: 600px) {
+        .hamburger { display: block !important; font-size: 24px; background: none; border: none; cursor: pointer; }
+        .nav-links {
+            position: fixed; top: 0; right: -250px; width: 200px; height: 100vh;
+            background: var(--color-container); flex-direction: column; padding: 80px 20px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: 0.4s; z-index: 999;
+        }
+        .nav-links.open { right: 0; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 998; }
     }
+    .hamburger { display: none; }
 </style>
 </head>
 <body>
 
-<div class="overlay" id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); z-index:5;"></div>
+<div class="overlay" id="overlay"></div>
 
 <header class="top-header">
     <div class="logo-box">
-        <img src="img/logo_moco.png" alt="logo">
+        <img src="img/logo_moco.png">
         <span>MOCO MOCO</span>
     </div>
-    <nav class="nav-links" id="nav-menu">
+    <nav class="nav-links" id="nav-links">
         <a href="#" data-section="home">Home</a>
         <a href="#" data-section="listas">Listas</a>
         <a href="#" data-section="sobre">Sobre</a>
         <a id="login-btn">Entrar</a>
         <a id="logout-btn">Salir</a>
     </nav>
-    <button class="hamburger" id="hamburger" style="background:none; border:none; font-size:24px; cursor:pointer;">☰</button>
+    <button class="hamburger" id="hamburger">☰</button>
 </header>
 
 <main>
     <section id="home" class="section active">
         <div class="list-container">
-            <div class="list-header">
-                <span class="list-title">Mi Lista Actual</span>
-            </div>
-            <div class="list-content" id="lista"></div>
+            <div class="list-header"><span id="active-title">Cargando...</span></div>
+            <div class="list-content" id="lista-html"></div>
             <div class="input-area">
-                <input type="text" id="item" placeholder="añadir algo...">
-                <button class="send-btn" id="add">enviar</button>
+                <input type="text" id="input-item" placeholder="Escribe algo...">
+                <button class="send-btn" id="btn-add">OK</button>
             </div>
         </div>
     </section>
 
     <section id="listas" class="section">
-        <h2>Mis Listas</h2>
-        <div class="multi-lists-container" id="multi-lists-container"></div>
-        <button id="add-list-btn" class="send-btn" style="margin: 20px auto; display: block;">+ Nueva Lista</button>
+        <h2 style="margin-bottom:15px">Mis Listas</h2>
+        <div id="grid-listas" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center"></div>
+        <button id="btn-nueva-lista" class="send-btn" style="height:40px; margin-top:20px; width:100%">+ Nueva Lista</button>
     </section>
 
     <section id="sobre" class="section">
         <h2>Sobre Moco</h2>
-        <p style="text-align:center;">Tu app de listas favorita.</p>
+        <p style="text-align:center">¡Organiza tus compras fácilmente!</p>
     </section>
 </main>
 
@@ -163,11 +150,14 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-let listas = [];
-let listaActiva = null;
+let data = { listas: [], listaActiva: null };
 let unsub = null;
 
-// --- LÓGICA DE USUARIO ---
+// ELEMENTOS UI
+const listaHTML = document.getElementById("lista-html");
+const activeTitle = document.getElementById("active-title");
+
+// --- GESTIÓN DE USUARIO ---
 onAuthStateChanged(auth, (user) => {
     const lBtn = document.getElementById("login-btn");
     const sBtn = document.getElementById("logout-btn");
@@ -175,108 +165,119 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         lBtn.style.display = "none";
         sBtn.style.display = "block";
+        
+        // Cargar datos reales
         unsub = onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
             if (snap.exists()) {
-                listas = snap.data().listas || [];
-                listaActiva = snap.data().listaActiva || (listas[0]?.id);
+                data = snap.data();
             } else {
-                listas = [{ id: Date.now(), titulo: "Mi Lista", items: [] }];
-                listaActiva = listas[0].id;
-                guardar();
+                data = { listas: [{ id: Date.now(), titulo: "Mi Lista", items: [] }], listaActiva: Date.now() };
+                save();
             }
-            render();
+            renderAll();
         });
     } else {
         lBtn.style.display = "block";
         sBtn.style.display = "none";
         if (unsub) unsub();
-        listas = [{ id: Date.now(), titulo: "Invitado", items: [] }];
-        listaActiva = listas[0].id;
-        render();
+        // Modo Invitado limpio
+        data = { listas: [{ id: 1, titulo: "Lista Temporal", items: [] }], listaActiva: 1 };
+        renderAll();
     }
 });
 
-// --- ACCIONES ---
-document.getElementById("login-btn").onclick = () => signInWithPopup(auth, provider);
-document.getElementById("logout-btn").onclick = () => signOut(auth).then(() => location.reload());
-
-async function guardar() {
+async function save() {
     if (auth.currentUser) {
-        await setDoc(doc(db, "usuarios", auth.currentUser.uid), { listas, listaActiva }, { merge: true });
+        await setDoc(doc(db, "usuarios", auth.currentUser.uid), data);
     }
 }
 
-function render() {
+// --- RENDER ---
+function renderAll() {
     renderHome();
-    renderListas();
+    renderListasGrid();
 }
 
 function renderHome() {
-    const lista = listas.find(l => l.id === listaActiva);
-    const cont = document.getElementById("lista");
-    if (!lista || !cont) return;
-    document.querySelector(".list-title").textContent = lista.titulo;
-    cont.innerHTML = "";
+    const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
+    if (!lista) return;
+
+    activeTitle.textContent = lista.titulo;
+    listaHTML.innerHTML = "";
+    
     lista.items.forEach((item, index) => {
         const div = document.createElement("div");
-        div.className = `list-item ${item.check ? "checked" : ""}`;
-        div.innerHTML = `<div class="item-checkbox"></div><div class="item-text">${item.texto}</div><button class="delete-btn">×</button>`;
-        div.querySelector(".item-checkbox").onclick = () => { item.check = !item.check; guardar(); };
-        div.querySelector(".delete-btn").onclick = () => { lista.items.splice(index, 1); guardar(); };
-        cont.appendChild(div);
+        div.className = `list-item ${item.check ? 'checked' : ''}`;
+        div.innerHTML = `
+            <div class="item-checkbox"></div>
+            <div class="item-text">${item.texto}</div>
+            <button class="delete-btn">×</button>
+        `;
+        div.querySelector(".item-checkbox").onclick = () => { item.check = !item.check; save(); };
+        div.querySelector(".delete-btn").onclick = () => { lista.items.splice(index, 1); save(); };
+        listaHTML.appendChild(div);
     });
 }
 
-function renderListas() {
-    const cont = document.getElementById("multi-lists-container");
-    if (!cont) return;
-    cont.innerHTML = "";
-    listas.forEach(l => {
-        const card = document.createElement("div");
-        card.className = "list-card";
-        card.innerHTML = `<div class="list-card-title">${l.titulo}</div><button class="open-list-btn">Abrir</button>`;
-        card.querySelector(".open-list-btn").onclick = () => { listaActiva = l.id; guardar(); document.querySelector('[data-section="home"]').click(); };
-        cont.appendChild(card);
+function renderListasGrid() {
+    const grid = document.getElementById("grid-listas");
+    grid.innerHTML = "";
+    data.listas.forEach(l => {
+        const btn = document.createElement("button");
+        btn.className = "send-btn";
+        btn.style.padding = "10px";
+        btn.textContent = l.titulo;
+        btn.onclick = () => {
+            data.listaActiva = l.id;
+            save();
+            document.querySelector('[data-section="home"]').click();
+        };
+        grid.appendChild(btn);
     });
 }
 
-document.getElementById("add").onclick = () => {
-    const val = document.getElementById("item").value;
-    const lista = listas.find(l => l.id === listaActiva);
-    if (val && lista) {
-        lista.items.push({ texto: val, check: false });
-        document.getElementById("item").value = "";
-        guardar();
+// --- EVENTOS ---
+document.getElementById("btn-add").onclick = () => {
+    const input = document.getElementById("input-item");
+    const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
+    if (input.value.trim() && lista) {
+        lista.items.push({ texto: input.value.trim(), check: false });
+        input.value = "";
+        save();
     }
 };
 
-document.getElementById("add-list-btn").onclick = () => {
-    if(!auth.currentUser) return alert("Inicia sesión para crear listas.");
-    const n = { id: Date.now(), titulo: "Nueva Lista", items: [] };
-    listas.push(n);
-    listaActiva = n.id;
-    guardar();
+document.getElementById("login-btn").onclick = () => signInWithPopup(auth, provider);
+document.getElementById("logout-btn").onclick = () => signOut(auth).then(() => location.reload());
+
+document.getElementById("btn-nueva-lista").onclick = () => {
+    if (!auth.currentUser) return alert("Inicia sesión para guardar listas");
+    const titulo = prompt("Nombre de la lista:");
+    if (titulo) {
+        const nueva = { id: Date.now(), titulo: titulo, items: [] };
+        data.listas.push(nueva);
+        data.listaActiva = nueva.id;
+        save();
+    }
 };
 
-// Navegación
+// NAVEGACIÓN MÓVIL
+const hamb = document.getElementById("hamburger");
+const nav = document.getElementById("nav-links");
+const overlay = document.getElementById("overlay");
+
+hamb.onclick = () => { nav.classList.toggle("open"); overlay.style.display = "block"; };
+overlay.onclick = () => { nav.classList.remove("open"); overlay.style.display = "none"; };
+
 document.querySelectorAll(".nav-links a[data-section]").forEach(a => {
-    a.onclick = () => {
+    a.onclick = (e) => {
+        e.preventDefault();
         document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
         document.getElementById(a.dataset.section).classList.add("active");
-        document.getElementById("nav-menu").classList.remove("open");
-        document.getElementById("overlay").style.display = "none";
+        nav.classList.remove("open");
+        overlay.style.display = "none";
     };
 });
-
-// Hamburguesa
-document.getElementById("hamburger").onclick = () => {
-    document.getElementById("nav-menu").classList.toggle("open");
-    document.getElementById("overlay").style.display = "block";
-};
-document.getElementById("overlay").onclick = () => {
-    document.getElementById("nav-menu").classList.remove("open");
-    document.getElementById("overlay").style.display = "none";
-};
 </script>
 </body>
 </html>
