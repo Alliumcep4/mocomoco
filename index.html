@@ -1,283 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moco</title>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Gochi+Hand&display=swap" rel="stylesheet">
-<link rel="icon" href="img/logo_moco.png" type="image/png">
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Pixelify+Sans&display=swap');
-
-    :root {
-        --color-bg: #f5a0a0;
-        --color-primary: #ea958d;
-        --color-primary-hover: #c05858;
-        --color-container: #f8d4d4;
-        --color-container-border: #e8a8a8;
-        --color-header: #f0baba;
-        --color-text-dark: #5a3535;
-        --radius-large: 35px;
-        --radius-pill: 50px;
-        --shadow-soft: 0 15px 50px rgba(0,0,0,0.12);
-    }
-
-    * { margin:0; padding:0; box-sizing:border-box; }
-
-    body {
-        font-family: 'Gochi Hand', cursive;
-        background: var(--color-bg);
-        min-height: 100vh;
-        padding: 15px;
-    }
-
-    /* HEADER */
-    .top-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 20px; background: var(--color-container);
-        border-radius: var(--radius-large); border: 3px solid var(--color-container-border);
-        box-shadow: var(--shadow-soft); position: relative; z-index: 1000;
-    }
-
-    .logo-box { display: flex; align-items: center; gap: 8px; font-family: 'Pixelify Sans', sans-serif; font-size: 18px; color: var(--color-text-dark); }
-    .logo-box img { height: 30px; }
-
-    .nav-links { display: flex; gap: 10px; }
-    .nav-links a {
-        text-decoration: none; font-family: 'Pixelify Sans', sans-serif;
-        padding: 8px 14px; border-radius: var(--radius-pill);
-        background: var(--color-primary); color: white; border: 2px solid var(--color-container-border);
-        font-size: 13px; cursor: pointer; transition: 0.3s;
-    }
-
-    #login-btn { background: #7bc47b; }
-    #logout-btn { background: #c48080; display: none; }
-
-    /* SECCIONES */
-    .section { display: none; background: var(--color-container); border: 3px solid var(--color-container-border); border-radius: var(--radius-large); padding: 25px; margin-top: 20px; }
-    .section.active { display: block; }
-
-    /* LISTA */
-    .list-container { background: rgba(255,255,255,0.3); border-radius: 25px; border: 2px solid var(--color-container-border); overflow: hidden; }
-    .list-header { background: var(--color-header); padding: 15px; text-align: center; font-family: 'Pixelify Sans'; font-weight: bold; color: var(--color-text-dark); }
-    .list-content { padding: 15px; min-height: 150px; }
-    .list-item { display: flex; align-items: center; gap: 10px; background: white; padding: 12px; border-radius: 20px; margin-bottom: 8px; border: 1px solid #eee; }
-    .list-item.checked { background: #dff0df; opacity: 0.8; }
-    .item-checkbox { width: 22px; height: 22px; border: 2px solid #ccc; border-radius: 6px; cursor: pointer; flex-shrink: 0; }
-    .checked .item-checkbox { background: #7bc47b; border-color: #7bc47b; position: relative; }
-    .checked .item-checkbox::after { content: '✓'; color: white; position: absolute; left: 4px; top: -2px; font-size: 16px; }
-    .item-text { flex: 1; font-size: 18px; color: var(--color-text-dark); }
-    .checked .item-text { text-decoration: line-through; color: #888; }
-    .delete-btn { background: #ffb3b3; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; color: #900; font-weight: bold; }
-
-    .input-area { display: flex; gap: 8px; padding: 15px; }
-    .input-area input { flex: 1; padding: 12px; border-radius: 15px; border: 2px solid var(--color-container-border); font-family: 'Gochi Hand'; font-size: 16px; outline: none; }
-    .send-btn { background: var(--color-primary); color: white; border: none; padding: 0 20px; border-radius: 15px; font-family: 'Pixelify Sans'; cursor: pointer; }
-
-    /* MOBILE NAVIGATION */
-    @media (max-width: 600px) {
-        .hamburger { display: block !important; font-size: 24px; background: none; border: none; cursor: pointer; }
-        .nav-links {
-            position: fixed; top: 0; right: -250px; width: 200px; height: 100vh;
-            background: var(--color-container); flex-direction: column; padding: 80px 20px;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: 0.4s; z-index: 999;
-        }
-        .nav-links.open { right: 0; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 998; }
-    }
-    .hamburger { display: none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moco Moco</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Gochi+Hand&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/logo_moco.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="overlay" id="overlay"></div>
 
+<!-- ─── HEADER ─── -->
 <header class="top-header">
-    <div class="logo-box">
-        <img src="img/logo_moco.png">
-        <span>MOCO MOCO</span>
-    </div>
-    <nav class="nav-links" id="nav-links">
-        <a href="#" data-section="home">Home</a>
-        <a href="#" data-section="listas">Listas</a>
-        <a href="#" data-section="sobre">Sobre</a>
-        <a id="login-btn">Entrar</a>
-        <a id="logout-btn">Salir</a>
-    </nav>
-    <button class="hamburger" id="hamburger">☰</button>
+  <div class="logo-box">
+    <img src="img/logo_moco.png" alt="Moco Moco">
+    <span>MOCO MOCO</span>
+  </div>
+
+  <nav class="nav-links" id="nav-links">
+    <a href="#" data-section="home">Home</a>
+    <a href="#" data-section="listas">Listas</a>
+    <a href="#" data-section="sobre">Sobre</a>
+    <a id="login-btn">Entrar</a>
+    <a id="logout-btn" style="display:none">Salir</a>
+  </nav>
+
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+      <line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/>
+    </svg>
+  </button>
 </header>
 
+<!-- ─── MAIN ─── -->
 <main>
-    <section id="home" class="section active">
-        <div class="list-container">
-            <div class="list-header"><span id="active-title">Cargando...</span></div>
-            <div class="list-content" id="lista-html"></div>
-            <div class="input-area">
-                <input type="text" id="input-item" placeholder="Escribe algo...">
-                <button class="send-btn" id="btn-add">OK</button>
-            </div>
+
+  <!-- HOME -->
+  <section id="home" class="section active">
+
+    <!-- Mascota -->
+    <div class="mascota-zone">
+      <div class="mascota-wrap">
+        <div class="mascota-bubble" id="mascota-bubble"></div>
+        <img class="mascota-img floating" id="mascota-img" src="img/flan.png" alt="mascota">
+      </div>
+    </div>
+
+    <!-- Lista card -->
+    <div class="list-card">
+
+      <div class="list-header">
+        <span id="active-title">Cargando...</span>
+      </div>
+
+      <!-- Barra progreso -->
+      <div class="progreso-container">
+        <div class="progreso-track">
+          <div class="progreso-bar" id="progreso-bar"></div>
         </div>
-    </section>
+        <span class="progreso-texto" id="progreso-texto"></span>
+      </div>
 
-    <section id="listas" class="section">
-        <h2 style="margin-bottom:15px">Mis Listas</h2>
-        <div id="grid-listas" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center"></div>
-        <button id="btn-nueva-lista" class="send-btn" style="height:40px; margin-top:20px; width:100%">+ Nueva Lista</button>
-    </section>
+      <!-- Items -->
+      <div class="list-content" id="lista-html"></div>
 
-    <section id="sobre" class="section">
-        <h2>Sobre Moco</h2>
-        <p style="text-align:center">¡Organiza tus compras fácilmente!</p>
-    </section>
+      <!-- Input -->
+      <div class="input-area">
+        <input
+          type="text"
+          id="input-item"
+          placeholder="leche, tomate x2, ramen..."
+          autocomplete="off"
+        >
+        <button class="send-btn" id="btn-add">OK</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LISTAS -->
+  <section id="listas" class="section">
+    <h2>Mis Listas</h2>
+    <div class="grid-listas" id="grid-listas"></div>
+    <button class="btn-full" id="btn-nueva-lista">+ Nueva Lista</button>
+  </section>
+
+  <!-- SOBRE -->
+  <section id="sobre" class="section">
+    <img src="img/macaron.png" class="sobre-mascota" alt="mascota">
+    <h2>MOCO MOCO</h2>
+    <p>organiza tus compras con estilo</p>
+    <p style="font-size:14px; margin-top:8px; opacity:0.65">hecho con mucho cariño y bastante ramen</p>
+    <div style="margin-top:18px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center">
+      <span class="sobre-tag">Firebase</span>
+      <span class="sobre-tag">Pixelify Sans</span>
+      <span class="sobre-tag">Gochi Hand</span>
+      <span class="sobre-tag">pixel art</span>
+      <span class="sobre-tag">cozy vibes</span>
+    </div>
+  </section>
+
 </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+<!-- ─── BOTTOM NAV (mobile) ─── -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a href="#" data-section="home" class="active-nav">
+      <span class="nav-icon">
+        <svg viewBox="0 0 16 16" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">
+          <path d="M1 8L8 2L15 8"/><path d="M4 8L4 14L7 14L7 10L9 10L9 14L12 14L12 8"/>
+        </svg>
+      </span>
+      <span>Inicio</span>
+    </a>
+    <a href="#" data-section="listas">
+      <span class="nav-icon">
+        <svg viewBox="0 0 16 16" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <rect x="2" y="2" width="12" height="12"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="11" y2="9"/><line x1="5" y1="12" x2="9" y2="12"/>
+        </svg>
+      </span>
+      <span>Listas</span>
+    </a>
+    <a href="#" data-section="sobre">
+      <span class="nav-icon">
+        <svg viewBox="0 0 16 16" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <rect x="2" y="2" width="12" height="12" rx="1"/><line x1="8" y1="7" x2="8" y2="12"/><rect x="7.25" y="4" width="1.5" height="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span>Sobre</span>
+    </a>
+  </div>
+</nav>
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBG1xwk7n863tpk7FYUBhOTEs-4HO1ht64",
-    authDomain: "mocomoco-39b6c.firebaseapp.com",
-    projectId: "mocomoco-39b6c",
-    storageBucket: "mocomoco-39b6c.appspot.com",
-    messagingSenderId: "546259757508",
-    appId: "1:546259757508:web:fd26534abafb1609475c91"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-let data = { listas: [], listaActiva: null };
-let unsub = null;
-
-// ELEMENTOS UI
-const listaHTML = document.getElementById("lista-html");
-const activeTitle = document.getElementById("active-title");
-
-// --- GESTIÓN DE USUARIO ---
-onAuthStateChanged(auth, (user) => {
-    const lBtn = document.getElementById("login-btn");
-    const sBtn = document.getElementById("logout-btn");
-
-    if (user) {
-        lBtn.style.display = "none";
-        sBtn.style.display = "block";
-        
-        // Cargar datos reales
-        unsub = onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
-            if (snap.exists()) {
-                data = snap.data();
-            } else {
-                data = { listas: [{ id: Date.now(), titulo: "Mi Lista", items: [] }], listaActiva: Date.now() };
-                save();
-            }
-            renderAll();
-        });
-    } else {
-        lBtn.style.display = "block";
-        sBtn.style.display = "none";
-        if (unsub) unsub();
-        // Modo Invitado limpio
-        data = { listas: [{ id: 1, titulo: "Lista Temporal", items: [] }], listaActiva: 1 };
-        renderAll();
-    }
-});
-
-async function save() {
-    if (auth.currentUser) {
-        await setDoc(doc(db, "usuarios", auth.currentUser.uid), data);
-    }
-}
-
-// --- RENDER ---
-function renderAll() {
-    renderHome();
-    renderListasGrid();
-}
-
-function renderHome() {
-    const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
-    if (!lista) return;
-
-    activeTitle.textContent = lista.titulo;
-    listaHTML.innerHTML = "";
-    
-    lista.items.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = `list-item ${item.check ? 'checked' : ''}`;
-        div.innerHTML = `
-            <div class="item-checkbox"></div>
-            <div class="item-text">${item.texto}</div>
-            <button class="delete-btn">×</button>
-        `;
-        div.querySelector(".item-checkbox").onclick = () => { item.check = !item.check; save(); };
-        div.querySelector(".delete-btn").onclick = () => { lista.items.splice(index, 1); save(); };
-        listaHTML.appendChild(div);
-    });
-}
-
-function renderListasGrid() {
-    const grid = document.getElementById("grid-listas");
-    grid.innerHTML = "";
-    data.listas.forEach(l => {
-        const btn = document.createElement("button");
-        btn.className = "send-btn";
-        btn.style.padding = "10px";
-        btn.textContent = l.titulo;
-        btn.onclick = () => {
-            data.listaActiva = l.id;
-            save();
-            document.querySelector('[data-section="home"]').click();
-        };
-        grid.appendChild(btn);
-    });
-}
-
-// --- EVENTOS ---
-document.getElementById("btn-add").onclick = () => {
-    const input = document.getElementById("input-item");
-    const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
-    if (input.value.trim() && lista) {
-        lista.items.push({ texto: input.value.trim(), check: false });
-        input.value = "";
-        save();
-    }
-};
-
-document.getElementById("login-btn").onclick = () => signInWithPopup(auth, provider);
-document.getElementById("logout-btn").onclick = () => signOut(auth).then(() => location.reload());
-
-document.getElementById("btn-nueva-lista").onclick = () => {
-    if (!auth.currentUser) return alert("Inicia sesión para guardar listas");
-    const titulo = prompt("Nombre de la lista:");
-    if (titulo) {
-        const nueva = { id: Date.now(), titulo: titulo, items: [] };
-        data.listas.push(nueva);
-        data.listaActiva = nueva.id;
-        save();
-    }
-};
-
-// NAVEGACIÓN MÓVIL
-const hamb = document.getElementById("hamburger");
-const nav = document.getElementById("nav-links");
-const overlay = document.getElementById("overlay");
-
-hamb.onclick = () => { nav.classList.toggle("open"); overlay.style.display = "block"; };
-overlay.onclick = () => { nav.classList.remove("open"); overlay.style.display = "none"; };
-
-document.querySelectorAll(".nav-links a[data-section]").forEach(a => {
-    a.onclick = (e) => {
-        e.preventDefault();
-        document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-        document.getElementById(a.dataset.section).classList.add("active");
-        nav.classList.remove("open");
-        overlay.style.display = "none";
-    };
-});
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
