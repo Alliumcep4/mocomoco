@@ -19,7 +19,6 @@ const provider = new GoogleAuthProvider();
 
 /* ─── ICONOS SVG ─── */
 const ICONS = {
-  // Navegación
   home:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M1 8L8 2L15 8"/><path d="M4 8L4 14L7 14L7 10L9 10L9 14L12 14L12 8"/></svg>`,
   list:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><rect x="2" y="2" width="12" height="12"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="11" y2="9"/><line x1="5" y1="12" x2="9" y2="12"/></svg>`,
   info:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><rect x="2" y="2" width="12" height="12" rx="1"/><line x1="8" y1="7" x2="8" y2="12"/><rect x="7.25" y="4" width="1.5" height="1.5" fill="currentColor" stroke="none"/></svg>`,
@@ -29,8 +28,6 @@ const ICONS = {
   trash:     `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5H13"/><path d="M6 4.5V2.8C6 2.3 6.3 2 6.8 2H9.2C9.7 2 10 2.3 10 2.8V4.5"/><path d="M4.5 4.5L5 13.2C5 13.6 5.4 14 5.8 14H10.2C10.6 14 11 13.6 11 13.2L11.5 4.5"/></svg>`,
   close:     `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`,
   plus:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>`,
-
-  // Categorías
   milk:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><polygon points="5,1 11,1 13,5 13,15 3,15 3,5"/><line x1="5" y1="9" x2="11" y2="9"/></svg>`,
   leaf:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M2 14C5 10 9 6 13 3C13 8 10 13 2 14Z"/><line x1="2" y1="14" x2="9" y2="7"/></svg>`,
   cherry:    `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="5" cy="12" r="2.5"/><circle cx="11" cy="12" r="2.5"/><path d="M5 9.5C5 7 8 4 8 2"/><path d="M11 9.5C11 7 8 4 8 2"/></svg>`,
@@ -44,12 +41,8 @@ const ICONS = {
   snowflake: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`,
   can:       `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><rect x="3" y="5" width="10" height="9"/><line x1="3" y1="5" x2="13" y2="5"/><line x1="3" y1="4" x2="13" y2="4"/></svg>`,
   box:       `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><polyline points="1,5 8,9 15,5"/><polygon points="1,5 8,1 15,5 15,13 8,15 1,13"/><line x1="8" y1="9" x2="8" y2="15"/></svg>`,
-
-  // Tags de item
   drop:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5C8 1.5 3 7.2 3 10.3C3 12.9 5.2 15 8 15C10.8 15 13 12.9 13 10.3C13 7.2 8 1.5 8 1.5Z"/></svg>`,
   fire:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15C5 15 3 13 3 10.3C3 8.5 4 7 4.7 5.8C5 7 6 7.3 6 6.3C6 4.5 7.2 2.6 8.8 1.5C8.3 3.2 9.4 4 10.2 5C11.2 6.2 12 7.5 12 9.6C12 12.6 10.5 15 8 15Z"/></svg>`,
-
-  // Moods
   cart:    `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><polyline points="1,2 3,2 6,11 12,11"/><polyline points="3,4 13,4 12,11"/><rect x="5" y="13" width="2" height="2"/><rect x="10" y="13" width="2" height="2"/></svg>`,
   bolt:    `<svg viewBox="0 0 16 16" fill="currentColor"><polygon points="10,1 4,9 8,9 6,15 14,6 10,6"/></svg>`,
   moon:    `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M9 2C6 2 3 4.7 3 8C3 11.3 5.7 14 9 14C11 14 12.8 13 14 11.5C13 11.9 12 12 11 12C8.2 12 6 9.8 6 7C6 5 7.1 3.2 9 2.3C9 2.2 9 2 9 2Z"/></svg>`,
@@ -64,23 +57,241 @@ function icon(name, size = 16) {
   return svg.replace("<svg ", `<svg width="${size}" height="${size}" `);
 }
 
-/* ─── CATEGORÍAS ─── */
+/* ═══════════════════════════════════════════════════════
+   CATEGORÍAS + DETECCIÓN
+   ═══════════════════════════════════════════════════════ */
+
 const CATEGORIAS = {
-  lácteos:    { icon: "milk",      color: "var(--c-cat-lacteos)",    palabras: ["leche","yogur","queso","mantequilla","nata","kéfir","kefir","queso fresco","mozzarella","requesón","crema","natilla","pudding","flán","flan","leche condensada","leche evaporada","petit suisse","danone","activia"] },
-  verduras:   { icon: "leaf",      color: "var(--c-cat-verduras)",   palabras: ["tomate","cebolla","ajo","lechuga","zanahoria","patata","pimiento","pepino","brócoli","brocoli","espinaca","calabacín","calabacin","berenjena","coliflor","acelga","apio","maíz","mais","judía","guisante","alcachofa","rábano","puerro","remolacha","nabo","col","colirrábano","endivia","endibias","escarola","rúcula","rucula"] },
-  fruta:      { icon: "cherry",    color: "var(--c-cat-fruta)",      palabras: ["manzana","plátano","platano","naranja","fresa","uva","melón","melon","sandía","sandia","pera","melocotón","melocoton","kiwi","piña","pina","cereza","ciruela","mango","aguacate","limón","limon","mandarina","pomelo","granada","higo","cacao","frambuesa","mora","grosella","albaricoque","níspero"] },
-  carne:      { icon: "drumstick", color: "var(--c-cat-carne)",      palabras: ["pollo","ternera","cerdo","jamón","jamon","chorizo","pavo","cordero","carne picada","lomo","fiambre","salchichón","salchicon","mortadela","bacon","panceta","costilla","salchicha","carnicería","pechuga","contramuslo","muslo","alitas","solomillo"] },
-  pescado:    { icon: "fish",      color: "var(--c-cat-pescado)",    palabras: ["merluza","salmón","salmon","atún","atun","bacalao","gamba","mejillón","mejillon","boquerón","boqueron","sepia","calamar","dorada","lubina","sardina","caballa","pulpo","langostino","anchoa","rape","trucha","carpa","tilapia","pez espada","pijota"] },
-  pasta:      { icon: "noodles",   color: "var(--c-cat-pasta)",      palabras: ["pasta","arroz","macarrón","macarron","espagueti","fideo","ramen","tallarín","tallarin","cous cous","quinoa","lasaña","lasana","ravioli","penne","gnocchi","orzo","polenta","sémola","semola"] },
-  panadería:  { icon: "bread",     color: "var(--c-cat-panaderia)",  palabras: ["pan","baguette","croissant","tostada","bollería","bolleria","bizcocho","muffin","brioche","chapata","pita","tortilla de harina","magdalena","donut","churro","ensaimada","ensayma"] },
-  bebidas:    { icon: "cup",       color: "var(--c-cat-bebidas)",    palabras: ["agua","zumo","refresco","cerveza","vino","cola","leche vegetal","té","te","café","cafe","batido","soda","limonada","kombucha","sidra","cava","whisky","ron","ginebra","vermut","bebida","smoothie","gazpacho","horchata","champagne"] },
-  limpieza:   { icon: "spray",     color: "var(--c-cat-limpieza)",   palabras: ["detergente","lejía","lejia","suavizante","friegaplatos","bayeta","papel","servilleta","rollo","escoba","fregona","guante","bolsa basura","limpiacristales","desinfectante","ambientador","esponja","jabón","jabon","cepillo","trapo","bayetón","jabonera","estropajo"] },
-  snacks:     { icon: "star",      color: "var(--c-cat-snacks)",     palabras: ["patatas fritas","galleta","chocolate","palomitas","cereal","nachos","gusanito","fruto seco","almendra","cacahuete","pistache","pistacho","anacardo","nuez","pipa","chicle","caramelo","chuche","gominola","turrón","bombón","bombones","golosina"] },
-  congelados: { icon: "snowflake", color: "var(--c-cat-congelados)", palabras: ["pizza","helado","congelado","nugget","empanadilla","croqueta congelada","varitas","berenjenas rebozadas","calamares congelados","alitas congeladas","croquetas"] },
-  conservas:  { icon: "can",       color: "var(--c-cat-conservas)",  palabras: ["lata","atún en lata","atun en lata","garbanzos","lentejas","tomate frito","alubias","maíz en lata","mais en lata","fabada","cocido","sopa","caldo","escabeche","champiñones","champinones","alcachofa"] },
+  lácteos: {
+    icon: "milk", color: "var(--c-cat-lacteos)",
+    palabras: [
+      "leche","yogur","huevo","queso","mantequilla","nata","kéfir","queso fresco",
+      "mozzarella","requesón","crema","natilla","pudding","flan",
+      "leche condensada","leche evaporada","petit suisse","cuajada",
+      "queso rallado","queso curado","queso semicurado","queso de cabra",
+      "queso crema","leche desnatada","leche semidesnatada","leche entera",
+      "leche sin lactosa","bechamel","margarina","mascarpone","burrata",
+      "danone","central lechera asturiana","pascual","puleva","kaiku",
+      "president","philadelphia","actimel","danonino","asturiana",
+      "flora","tulipán","kraft","el caserío","arias","leyma","feiraco",
+      "pastoret","yoplait","chamburcy","la lechera","colun","activia",
+      "nestlé","gervais","royal","hacendado leche","emmi"
+    ]
+  },
+  verduras: {
+    icon: "leaf", color: "var(--c-cat-verduras)",
+    palabras: [
+      "tomate","cebolla","ajo","lechuga","zanahoria","patata","pimiento",
+      "pepino","brócoli","espinaca","calabacín","berenjena","coliflor",
+      "acelga","apio","maíz","judía","guisante","alcachofa","rábano",
+      "puerro","remolacha","nabo","col","colirrábano","endivia","endibia",
+      "escarola","rúcula","champiñón","seta","boniato","calabaza","aguacate",
+      "espárrago","haba","canónigo","kale","repollo","calçot",
+      "florette","bonduelle","verdifresh","eat lean"
+    ]
+  },
+  fruta: {
+    icon: "cherry", color: "var(--c-cat-fruta)",
+    palabras: [
+      "manzana","plátano","naranja","fresa","uva","melón","sandía","pera",
+      "melocotón","kiwi","piña","cereza","ciruela","mango","limón",
+      "mandarina","pomelo","granada","higo","frambuesa","mora","grosella",
+      "albaricoque","níspero","nectarina","papaya","chirimoya","caqui",
+      "coco","lima","maracuyá","dátil"
+    ]
+  },
+  carne: {
+    icon: "drumstick", color: "var(--c-cat-carne)",
+    palabras: [
+      "pollo","ternera","cerdo","jamón","chorizo","pavo","cordero",
+      "carne picada","lomo","fiambre","salchichón","mortadela","bacon",
+      "panceta","costilla","salchicha","pechuga","contramuslo","muslo",
+      "alitas","solomillo","filete","chuleta","bistec","paletilla",
+      "morcilla","butifarra","secreto","presa","entrecot","hamburguesa",
+      "albóndiga","cinta de lomo","conejo",
+      "el pozo","campofrío","argal","casa tarradellas","oscar mayer",
+      "palacios","navidul","elpozo","incarlopsa","coren","revilla",
+      "espuña","tarradellas","la selva"
+    ]
+  },
+  pescado: {
+    icon: "fish", color: "var(--c-cat-pescado)",
+    palabras: [
+      "merluza","salmón","atún","bacalao","gamba","mejillón","boquerón",
+      "sepia","calamar","dorada","lubina","sardina","caballa","pulpo",
+      "langostino","anchoa","rape","trucha","carpa","tilapia","pez espada",
+      "marisco","camarón","langosta","almeja","navaja","percebe","chipirón",
+      "surimi","bacaladilla","panga",
+      "calvo","isabel","cuca","consorcio","rianxeira","pescanova",
+      "frinsa","albo","la gaviota","ubago","massó"
+    ]
+  },
+  pasta: {
+    icon: "noodles", color: "var(--c-cat-pasta)",
+    palabras: [
+      "pasta","arroz","macarrón","espagueti","fideo","ramen","tallarín",
+      "cous cous","quinoa","lasaña","ravioli","penne","gnocchi","orzo",
+      "polenta","sémola","tortellini","canelón","fideuá","udon","soba",
+      "barilla","gallo","pastas gallo","sos arroz","brillante","nomen",
+      "panzani","buitoni"
+    ]
+  },
+  panadería: {
+    icon: "bread", color: "var(--c-cat-panaderia)",
+    palabras: [
+      "pan","baguette","croissant","tostada","bollería","bizcocho","muffin",
+      "brioche","chapata","pita","tortilla de harina","magdalena","donut",
+      "churro","ensaimada","palmera","napolitana","pan de molde","picos",
+      "colines","pan rallado","pan integral","pan de centeno",
+      "bimbo","panrico","dulcesol","martínez","bollycao","fontaneda",
+      "la bella easo","panadul"
+    ]
+  },
+  bebidas: {
+    icon: "cup", color: "var(--c-cat-bebidas)",
+    palabras: [
+      "agua","zumo","refresco","cerveza","vino","cola","leche vegetal",
+      "té","café","batido","soda","limonada","bebida","smoothie","horchata",
+      "cava","sidra","whisky","ron","ginebra","vermut","champagne","vodka",
+      "sangría","mosto","tónica","bebida isotónica","infusión","cacao soluble","champán",
+      "coca-cola","coca cola","pepsi","fanta","sprite","nestea","schweppes",
+      "kas","trina","don simón","granini","minute maid","zumosol",
+      "garcía carrión","font vella","lanjarón","bezoya","aquarius",
+      "cacaolat","colacao","nesquik","san miguel","mahou","estrella galicia",
+      "estrella damm","cruzcampo","heineken","amstel","alhambra","voll-damm",
+      "freixenet","codorníu","martini","red bull","monster","burn",
+      "nescafé","lavazza","aquabona","solán de cabras","vichy catalán"
+    ]
+  },
+  limpieza: {
+    icon: "spray", color: "var(--c-cat-limpieza)",
+    palabras: [
+      "detergente","lejía","suavizante","friegaplatos","bayeta","papel",
+      "servilleta","rollo","escoba","fregona","guante","bolsa basura",
+      "limpiacristales","desinfectante","ambientador","esponja","jabón",
+      "cepillo","trapo","estropajo","quitagrasas","lavavajillas",
+      "papel higiénico","pañuelo",
+      "fairy","ariel","skip","mistol","don limpio","wc net","vanish",
+      "finish","cif","ajax","norit","wipp","sanytol","bref","domestos",
+      "flash","kh7","suavitel","vernel","mimosín","dixan","nenuco",
+      "dodot","tena","cottonelle","scottex","colhogar"
+    ]
+  },
+  snacks: {
+    icon: "star", color: "var(--c-cat-snacks)",
+    palabras: [
+      "patatas fritas","galleta","chocolate","palomitas","cereal","nachos",
+      "fruto seco","almendra","cacahuete","pistacho","anacardo","nuez",
+      "pipa","chicle","caramelo","chuche","gominola","turrón","bombón",
+      "golosina","barrita","snack","tableta de chocolate","cortezas",
+      "lay's","lays","pringles","doritos","ruffles","cheetos","oreo",
+      "príncipe","chips ahoy","digestive","chiquilín","fontaneda galleta",
+      "nutella","kinder","milka","lindt","ferrero rocher","m&m's","haribo",
+      "chupa chups","trident","orbit","lacasitos","nocilla","filipinos",
+      "tosta rica","marbú","cuétara","artiach","tuc","gullón","toblerone",
+      "hershey's","twix","snickers","kitkat","mars","bounty"
+    ]
+  },
+  congelados: {
+    icon: "snowflake", color: "var(--c-cat-congelados)",
+    palabras: [
+      "pizza","helado","congelado","nugget","empanadilla","croqueta",
+      "varitas de merluza","calamares congelados","alitas congeladas",
+      "gulas","rebozado","polo","tarrina de helado","canelones congelados",
+      "verdura congelada","guisantes congelados","patatas fritas congeladas",
+      "frudesa","la cocinera","findus","miko","frigo","häagen-dazs",
+      "magnum","carte d'or","gelatelli"
+    ]
+  },
+  conservas: {
+    icon: "can", color: "var(--c-cat-conservas)",
+    palabras: [
+      "lata","atún en lata","garbanzos","lentejas","tomate frito","alubias",
+      "maíz en lata","fabada","cocido","sopa","caldo","escabeche",
+      "champiñones en lata","aceituna","paté","conserva","tomate triturado",
+      "legumbre cocida","mejillones en lata","berberechos",
+      "ortiz","la catedral","hida","litoral","rosara","orlando"
+    ]
+  },
+  otros: {
+    icon: "box", color: "var(--c-cat-otros)",
+    palabras: [
+      "aceite","vinagre","sal","azúcar","harina","especias","salsa",
+      "mayonesa","ketchup","mostaza","miel","levadura","edulcorante",
+      "aceite de oliva","aceite de girasol","canela","pimentón","orégano"
+    ]
+  }
 };
 
 const ORDEN_SUPERMERCADO = ["fruta","verduras","panadería","lácteos","carne","pescado","congelados","pasta","conservas","bebidas","snacks","limpieza","otros"];
+
+const CADENAS_IGNORADAS = new Set([
+  "mercadona","carrefour","lidl","dia","alcampo","eroski","aldi",
+  "consum","hipercor","ahorramas","condis","caprabo"
+]);
+
+function normalizarTexto(str) {
+  return str
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function pluralizar(palabra) {
+  if (/[aeiou]$/.test(palabra)) return palabra + "s";
+  return palabra + "es";
+}
+
+const INDICE_CATEGORIAS = new Map();
+
+(function construirIndice() {
+  for (const [categoria, datos] of Object.entries(CATEGORIAS)) {
+    for (const original of datos.palabras) {
+      const norm = normalizarTexto(original);
+      if (!INDICE_CATEGORIAS.has(norm)) INDICE_CATEGORIAS.set(norm, categoria);
+      if (!norm.includes(" ")) {
+        const plural = pluralizar(norm);
+        if (!INDICE_CATEGORIAS.has(plural)) INDICE_CATEGORIAS.set(plural, categoria);
+      }
+    }
+  }
+})();
+
+const FALLBACK_GENERICO = [
+  { match: ["carne", "filete", "chuleta", "bistec", "costilla", "paletilla"], cat: "carne" },
+  { match: ["pescado", "marisco", "camaron", "camarones", "langosta", "almeja"], cat: "pescado" },
+  { match: ["verdura", "hortaliza", "legumbre"], cat: "verduras" },
+  { match: ["fruta", "citrico"], cat: "fruta" },
+  { match: ["bebida", "liquido"], cat: "bebidas" },
+  { match: ["dulce", "postre", "chuche", "golosina"], cat: "snacks" },
+  { match: ["limpieza", "higiene"], cat: "limpieza" }
+];
+
+function detectarCategoria(texto) {
+  const norm = normalizarTexto(texto);
+  const tokens = norm
+    .split(/[^a-zñ0-9]+/)
+    .filter(t => t.length > 0 && !CADENAS_IGNORADAS.has(t));
+
+  if (tokens.length === 0) return "otros";
+
+  const maxNgram = Math.min(3, tokens.length);
+  for (let size = maxNgram; size >= 1; size--) {
+    for (let i = 0; i + size <= tokens.length; i++) {
+      const gram = tokens.slice(i, i + size).join(" ");
+      const cat = INDICE_CATEGORIAS.get(gram);
+      if (cat) return cat;
+    }
+  }
+
+  for (const regla of FALLBACK_GENERICO) {
+    if (tokens.some(t => regla.match.includes(t))) return regla.cat;
+  }
+
+  return "otros";
+}
 
 /* ─── PRECIOS APROXIMADOS (Mercadona/Spar) ─── */
 const PRECIOS = {
@@ -95,50 +306,23 @@ const PRECIOS = {
   "detergente": 3.50, "lejía": 1.50, "suavizante": 2.50, "papel": 2.00,
   "chocolate": 1.80, "galleta": 2.00, "palomitas": 2.50, "cereal": 3.50,
   "pizza": 4.50, "helado": 3.50, "nugget": 5.00, "empanadilla": 4.00,
-  "lata": 2.50, "garbanzos": 1.80, "lentejas": 1.50, "tomate frito": 1.20
+  "lata": 2.50, "garbanzos": 1.80, "lentejas": 1.50, "tomate frito": 1.20,
+  "huevo": 2.20
 };
-
-function detectarCategoria(texto) {
-  const lower = texto.toLowerCase();
-  
-  for (const [cat, data] of Object.entries(CATEGORIAS)) {
-    if (data.palabras.some(p => lower.includes(p))) return cat;
-  }
-  
-  if (lower.includes("carne") || lower.includes("filete") || lower.includes("chuleta") || 
-      lower.includes("bistec") || lower.includes("costilla") || lower.includes("paletilla")) return "carne";
-  
-  if (lower.includes("pescado") || lower.includes("marisco") || lower.includes("camarón") || 
-      lower.includes("camarones") || lower.includes("langosta") || lower.includes("almeja")) return "pescado";
-  
-  if (lower.includes("verdura") || lower.includes("hortaliza") || lower.includes("legumbre")) return "verduras";
-  
-  if (lower.includes("fruta") || lower.includes("cítrico")) return "fruta";
-  
-  if (lower.includes("bebida") || lower.includes("bebida") || lower.includes("líquido")) return "bebidas";
-  
-  if (lower.includes("dulce") || lower.includes("caramelo") || lower.includes("postre") || 
-      lower.includes("bombón") || lower.includes("chicle") || lower.includes("golosina")) return "snacks";
-  
-  if (lower.includes("producto de limpieza") || lower.includes("higiene")) return "limpieza";
-  
-  return "otros";
-}
 
 function detectarTags(texto) {
   const lower = texto.toLowerCase();
   const tags = [];
-  
   const palabrasCongelado = ["congelado", "congelada", "helado", "ultra", "frozen", "ice"];
   const palabrasRefrigerado = ["refrigerado", "refrigerada", "fresco", "fresca", "frío", "frio"];
   const palabrasOferta = ["oferta", "descuento", "rebaja", "promo", "promoción"];
   const palabrasImprescindible = ["imprescindible", "esencial", "importante", "prioritario"];
-  
+
   if (palabrasCongelado.some(p => lower.includes(p))) tags.push("congelado");
   if (palabrasRefrigerado.some(p => lower.includes(p))) tags.push("refrigerado");
   if (palabrasOferta.some(p => lower.includes(p))) tags.push("oferta");
   if (palabrasImprescindible.some(p => lower.includes(p))) tags.push("imprescindible");
-  
+
   return tags;
 }
 
@@ -146,26 +330,19 @@ function detectarPrecio(texto) {
   const lower = texto.toLowerCase();
   const cantidadMatch = texto.match(/x(\d+)/i);
   const cantidad = cantidadMatch ? parseInt(cantidadMatch[1]) : 1;
-  
+
   for (const [producto, precio] of Object.entries(PRECIOS)) {
     if (lower.includes(producto)) {
       return precio * cantidad;
     }
   }
-  
+
   const categoria = detectarCategoria(texto);
   const preciosDefecto = {
-    verduras: 2.00,
-    fruta: 2.50,
-    carne: 10.00,
-    pescado: 12.00,
-    lácteos: 2.50,
-    bebidas: 1.50,
-    snacks: 2.00,
-    congelados: 4.00,
-    otros: 2.00
+    verduras: 2.00, fruta: 2.50, carne: 10.00, pescado: 12.00,
+    lácteos: 2.50, bebidas: 1.50, snacks: 2.00, congelados: 4.00, otros: 2.00
   };
-  
+
   return (preciosDefecto[categoria] || 2.00) * cantidad;
 }
 
@@ -176,10 +353,7 @@ function calcularTotalLista(lista) {
   }, 0);
 }
 
-/* ─── MASCOTA ─── */
 /* ─── MASCOTA (eliminada) ─── */
-// Se elimina la mascota visual. Se mantiene un stub para evitar errores
-// en llamadas existentes desde otras partes del código.
 function mascotaReaccionar(evento, extra = "") {
   // Mascota eliminada: no hace nada.
 }
@@ -233,7 +407,7 @@ const MOODS = [
   { icon: "bolt",    label: "gym",     color: "#d4e6f1" },
   { icon: "moon",    label: "noche",   color: "#e8d4ed" },
   { icon: "warning", label: "crisis",  color: "#e8e8e8" },
-  { icon: "cake",    label: "dulce",   color: "#f9d4ed" },
+  { icon: "cake",    label: "dulce",   color: "#f9d4ed" }
 ];
 
 /* ─── ACCESO RÁPIDO (sidebar) ─── */
@@ -368,7 +542,7 @@ function renderShoppingMode(lista) {
   if (!titleEl || !statsEl || !listEl) return;
 
   titleEl.textContent = escapeHTML(lista.titulo || "Mi Lista");
-  
+
   const total = (lista.items || []).length;
   const hechos = (lista.items || []).filter(i => i.check).length;
   const precioTotal = calcularTotalLista(lista);
@@ -561,12 +735,12 @@ function abrirModalEditarCategoria(item, lista) {
     <div class="modal-box">
       <h3>Categoría: ${escapeHTML(item.texto)}</h3>
       <div class="cat-picker" id="cat-picker">${catBtns}</div>
-      
+
       <h4 style="font-family: var(--font-pixel); font-size: 12px; margin: 14px 0 8px; color: var(--c-text-muted);">Etiquetas especiales</h4>
       <div class="tags-picker" id="tags-picker" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
         ${tagBtns}
       </div>
-      
+
       <div class="modal-actions">
         <button class="btn-cancel" id="modal-cancel">cancelar</button>
         <button class="send-btn" id="modal-ok">Guardar</button>
@@ -668,7 +842,6 @@ function renderSidebarCategorias() {
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
   });
 
-  // Fila "Todas"
   const todasBtn = document.createElement("button");
   todasBtn.type = "button";
   todasBtn.className = "side-cat-item";
@@ -774,11 +947,11 @@ function renderListasGrid() {
         <button class="lista-delete-btn" title="eliminar lista">${icon("trash", 13)}</button>
       </div>
     `;
-    
-    btn.querySelector(".lista-content").onclick = () => { 
-      data.listaActiva = l.id; 
-      save(); 
-      navegar("home"); 
+
+    btn.querySelector(".lista-content").onclick = () => {
+      data.listaActiva = l.id;
+      save();
+      navegar("home");
     };
 
     btn.querySelector(".lista-edit-btn").onclick = (e) => {
@@ -1029,7 +1202,7 @@ document.querySelectorAll("[data-section]").forEach(a => {
   a.addEventListener("click", e => { e.preventDefault(); navegar(a.dataset.section); });
 });
 
-// Hamburger menu removed — mobile navigation reachable via normal UI
+// Menú hamburguesa eliminado — la navegación móvil se hace desde la UI normal
 
 document.getElementById("mascota-img")?.addEventListener("click", () => {
   const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
