@@ -244,6 +244,15 @@ function pluralizar(palabra) {
   return palabra + "es";
 }
 
+/* Redondea a 2 decimales evitando errores de coma flotante (0.1+0.2...) */
+function redondear2(n) {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function formatoEuro(valor) {
+  return (valor || 0).toFixed(2).replace(".", ",") + "€";
+}
+
 const INDICE_CATEGORIAS = new Map();
 
 (function construirIndice() {
@@ -683,9 +692,136 @@ function detectarPrecio(texto) {
 
 function calcularTotalLista(lista) {
   if (!lista.items) return 0;
-  return lista.items.reduce((total, item) => {
-    return total + (item.precio || detectarPrecio(item.texto));
-  }, 0);
+  return redondear2(lista.items.reduce((total, item) => {
+    return total + (typeof item.precioTotal === "number"
+      ? item.precioTotal
+      : (item.cantidad || 1) * (item.precioUnitario ?? detectarPrecio(item.texto)));
+  }, 0));
+}
+
+/* ═══════════════════════════════════════════════════════
+   HISTORIAL DE PRECIOS (requisitos 3 y 4)
+   Estructura preparada para varios supermercados aunque hoy
+   solo se use uno por defecto:
+     data.historialPrecios = { leche: { mercadona: 1.45 } }
+   ═══════════════════════════════════════════════════════ */
+
+/* Supermercado activo. En el futuro esto podrá venir de un
+   selector en la UI; de momento hay un único valor por defecto. */
+const SUPERMERCADO_ACTUAL = "mercadona";
+
+/* Devuelve el último precio que el usuario introdujo a mano para
+   ese producto en el supermercado activo, o null si no hay historial. */
+function obtenerPrecioHistorial(texto) {
+  const clave = normalizarTexto(texto);
+  const entrada = data.historialPrecios && data.historialPrecios[clave];
+  if (entrada && typeof entrada[SUPERMERCADO_ACTUAL] === "number") {
+    return entrada[SUPERMERCADO_ACTUAL];
+  }
+  return null;
+}
+
+/* Guarda el precio que el usuario acaba de escribir a mano para
+   reutilizarlo la próxima vez que añada el mismo producto. */
+function guardarPrecioHistorial(texto, precio) {
+  const clave = normalizarTexto(texto);
+  if (!data.historialPrecios) data.historialPrecios = {};
+  if (!data.historialPrecios[clave]) data.historialPrecios[clave] = {};
+  data.historialPrecios[clave][SUPERMERCADO_ACTUAL] = redondear2(precio);
+}
+
+/* Precio unitario inicial para un producto NUEVO: primero mira el
+   historial manual del usuario y solo si no existe recurre a la
+   detección automática por palabras (PRECIOS). */
+function obtenerPrecioUnitarioInicial(texto) {
+  const historial = obtenerPrecioHistorial(texto);
+  return historial !== null ? historial : detectarPrecio(texto);
+}
+
+/* ═══════════════════════════════════════════════════════
+   APRENDIZAJE DE CATEGORÍAS (requisito 7)
+   data.categoriasAprendidas = { monster: "bebidas" }
+   Se consulta ANTES de la detección automática por palabras.
+   ═══════════════════════════════════════════════════════ */
+function detectarCategoriaConAprendizaje(texto) {
+  const clave = normalizarTexto(texto);
+  if (data.categoriasAprendidas && data.categoriasAprendidas[clave]) {
+    return data.categoriasAprendidas[clave];
+  }
+  return detectarCategoria(texto);
+}
+
+function aprenderCategoria(texto, categoria) {
+  const clave = normalizarTexto(texto);
+  if (!data.categoriasAprendidas) data.categoriasAprendidas = {};
+  data.categoriasAprendidas[clave] = categoria;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FAVORITOS REALES (requisito 6)
+   data.favoritos = [{ clave: "leche", texto: "Leche" }, ...]
+   Sustituye al antiguo acceso rápido fijo (ACCESO_RAPIDO).
+   ═══════════════════════════════════════════════════════ */
+function esFavorito(texto) {
+  const clave = normalizarTexto(texto);
+  return (data.favoritos || []).some(f => f.clave === clave);
+}
+
+function toggleFavorito(texto) {
+  if (!data.favoritos) data.favoritos = [];
+  const clave = normalizarTexto(texto);
+  const idx = data.favoritos.findIndex(f => f.clave === clave);
+  if (idx === -1) {
+    data.favoritos.push({ clave, texto });
+  } else {
+    data.favoritos.splice(idx, 1);
+  }
+  save();
+}
+
+/* ═══════════════════════════════════════════════════════
+   MIGRACIÓN DE COMPATIBILIDAD (requisito 8)
+   Adapta items antiguos (solo "texto", a veces con "x3" pegado,
+   y el antiguo campo "precio") al nuevo formato con cantidad,
+   precioUnitario y precioTotal independientes.
+   ═══════════════════════════════════════════════════════ */
+function migrarItem(item) {
+  // Ya está en el formato nuevo: solo nos aseguramos de que
+  // precioTotal exista y esté cuadrado con cantidad × unitario.
+  if (typeof item.cantidad === "number" && typeof item.precioUnitario === "number") {
+    item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
+    return item;
+  }
+
+  // Formato antiguo: la cantidad podía venir pegada al texto ("Leche x3")
+  const { base, cantidad } = separarCantidad(item.texto || "");
+  item.texto = base;
+  item.cantidad = typeof item.cantidad === "number" ? item.cantidad : (cantidad ? parseInt(cantidad, 10) : 1);
+
+  item.precioUnitario = typeof item.precio === "number"
+    ? item.precio
+    : obtenerPrecioUnitarioInicial(item.texto);
+
+  item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
+
+  if (!item.categoria) item.categoria = detectarCategoriaConAprendizaje(item.texto);
+  if (!item.tags) item.tags = detectarTags(item.texto);
+  if (typeof item.check !== "boolean") item.check = false;
+
+  delete item.precio; // sustituido por precioUnitario/precioTotal
+
+  return item;
+}
+
+function migrarDatos() {
+  if (!data.listas) data.listas = [];
+  data.listas.forEach(lista => {
+    if (!lista.items) lista.items = [];
+    lista.items = lista.items.map(migrarItem);
+  });
+  if (!data.historialPrecios) data.historialPrecios = {};
+  if (!data.categoriasAprendidas) data.categoriasAprendidas = {};
+  if (!data.favoritos) data.favoritos = [];
 }
 
 /* ─── MASCOTA (eliminada) ─── */
@@ -745,8 +881,9 @@ const MOODS = [
   { icon: "cake",    label: "dulce",   color: "#f9d4ed" }
 ];
 
-/* ─── ACCESO RÁPIDO (sidebar) ─── */
-const ACCESO_RAPIDO = ["leche", "huevos", "pan", "papel higiénico"];
+/* ─── BUSCADOR (requisito 5): filtra en tiempo real por nombre,
+   categoría o etiqueta, sin recargar nada. ─── */
+let filtroBusqueda = "";
 
 /* ─── GUARDAR ─── */
 async function save() {
@@ -775,9 +912,11 @@ onAuthStateChanged(auth, (user) => {
         data = snap.data();
         if (!data.listas) data.listas = [];
         if (!data.listaActiva && data.listas.length) data.listaActiva = data.listas[0].id;
+        migrarDatos();
       } else {
         const id = Date.now();
         data = { listas: [{ id, titulo: "Mi Lista", icon: "cart", items: [] }], listaActiva: id };
+        migrarDatos();
         save();
       }
       renderAll();
@@ -789,6 +928,7 @@ onAuthStateChanged(auth, (user) => {
     if (unsub) { unsub(); unsub = null; }
     const id = 1;
     data = { listas: [{ id, titulo: "Lista Temporal", icon: "cart", items: [] }], listaActiva: id };
+    migrarDatos();
     renderAll();
     setTimeout(() => mascotaReaccionar("invitado"), 600);
   }
@@ -826,7 +966,18 @@ function renderHome() {
   }
 
   const grupos = {};
-  (lista.items || []).forEach(item => {
+  let itemsVisibles = lista.items || [];
+
+  if (filtroBusqueda) {
+    itemsVisibles = itemsVisibles.filter(item => {
+      const texto = normalizarTexto(item.texto);
+      const cat = normalizarTexto(item.categoria || "");
+      const tags = (item.tags || []).map(t => normalizarTexto(t)).join(" ");
+      return texto.includes(filtroBusqueda) || cat.includes(filtroBusqueda) || tags.includes(filtroBusqueda);
+    });
+  }
+
+  itemsVisibles.forEach(item => {
     const cat = item.categoria || "otros";
     if (!grupos[cat]) grupos[cat] = [];
     grupos[cat].push(item);
@@ -834,7 +985,7 @@ function renderHome() {
 
   if (Object.keys(grupos).length === 0) {
     listaHTML.innerHTML = "";
-    listaHTML.appendChild(crearEstadoVacio());
+    listaHTML.appendChild(crearEstadoVacio(filtroBusqueda ? "sin resultados para tu búsqueda" : null));
     return;
   }
 
@@ -858,13 +1009,14 @@ function renderHome() {
   });
 }
 
-function crearEstadoVacio() {
+function crearEstadoVacio(mensaje) {
   const div = document.createElement("div");
   div.className = "empty-state";
+  const texto = mensaje || "la lista está vacía";
   div.innerHTML = `
     <img src="img/jellyfish.png" class="empty-img floating" alt="">
-    <p class="empty-title">${icon("star", 13)} la lista está vacía ${icon("star", 13)}</p>
-    <p class="empty-sub">escribe algo arriba</p>
+    <p class="empty-title">${icon("star", 13)} ${texto} ${icon("star", 13)}</p>
+    <p class="empty-sub">${mensaje ? "prueba con otra palabra" : "escribe algo arriba"}</p>
   `;
   return div;
 }
@@ -912,14 +1064,14 @@ function renderShoppingMode(lista) {
     listEl.appendChild(header);
 
     grupos[cat].forEach(item => {
-      const precio = item.precio || detectarPrecio(item.texto);
+      const precio = typeof item.precioTotal === "number" ? item.precioTotal : (item.cantidad || 1) * detectarPrecio(item.texto);
       const itemEl = document.createElement("button");
       itemEl.className = `shopping-item ${item.check ? "checked" : ""}`;
       itemEl.innerHTML = `
         <span class="item-icon-badge" style="background:${catInfo.color};flex-shrink:0;margin-right:12px;">${icon(catInfo.icon, 16)}</span>
-        <div class="shopping-item-text">${escapeHTML(item.texto)}</div>
+        <div class="shopping-item-text">${escapeHTML(item.texto)}${item.cantidad > 1 ? ` <span class="item-qty">x${item.cantidad}</span>` : ""}</div>
         <div class="shopping-item-right">
-          <span style="font-size: 11px; color: var(--c-text-muted);">${precio.toFixed(2).replace(".", ",")}€</span>
+          <span style="font-size: 11px; color: var(--c-text-muted);">${formatoEuro(precio)}</span>
           <div class="shopping-item-check">${item.check ? icon("check", 15) : ""}</div>
         </div>
       `;
@@ -951,20 +1103,34 @@ function crearItemEl(item, lista) {
     return `<span class="item-tag" title="${tag}">${icon(TAG_ICONS[tag] || "box", 12)}</span>`;
   }).join("");
 
-  const precio = item.precio || detectarPrecio(item.texto);
-  const precioHtml = `<span class="item-precio" title="click para editar">${precio.toFixed(2).replace(".", ",")}€</span>`;
+  // Requisitos 1 y 2: cantidad, precio unitario y precio total son campos
+  // propios del item (ver migrarItem para la compatibilidad con listas viejas).
+  const cantidad = item.cantidad || 1;
+  const precioTotal = typeof item.precioTotal === "number" ? item.precioTotal : cantidad * (item.precioUnitario || 0);
+  const precioHtml = `
+    <span class="item-precio" title="click para editar el precio unitario">
+      ${formatoEuro(precioTotal)}
+      ${cantidad > 1 ? `<small class="item-precio__unit">(${formatoEuro(item.precioUnitario)}/u)</small>` : ""}
+    </span>`;
 
-  const { base, cantidad } = separarCantidad(item.texto);
-  const qtyHtml = cantidad ? `<span class="item-qty">x${cantidad}</span>` : "";
+  const favActivo = esFavorito(item.texto);
 
   div.innerHTML = `
     <div class="item-checkbox">${item.check ? icon("check", 15) : ""}</div>
     <span class="item-icon-badge" style="background:${catInfo.color || "var(--c-cat-otros)"}">${icon(CATEGORIAS[item.categoria]?.icon || "box", 16)}</span>
     <div class="item-content">
-      <div class="item-text">${escapeHTML(base)}${qtyHtml}</div>
+      <div class="item-text-row">
+        <span class="item-text">${escapeHTML(item.texto)}</span>
+        <div class="qty-stepper" title="Cantidad">
+          <button type="button" class="qty-btn qty-minus" aria-label="Quitar uno">−</button>
+          <span class="qty-value">${cantidad}</span>
+          <button type="button" class="qty-btn qty-plus" aria-label="Añadir uno">+</button>
+        </div>
+      </div>
       <div class="item-tags">${tagsHtml}</div>
     </div>
     <div class="item-actions">
+      <button class="fav-btn ${favActivo ? "is-fav" : ""}" title="${favActivo ? "Quitar de favoritos" : "Añadir a favoritos"}">${icon("star", 14)}</button>
       ${precioHtml}
       <button class="edit-category-btn" title="cambiar categoría">${icon("edit", 13)}</button>
       <button class="delete-btn" title="eliminar">${icon("close", 12)}</button>
@@ -978,6 +1144,27 @@ function crearItemEl(item, lista) {
     save();
     if (item.check) mascotaReaccionar("check");
     checkListaCompleta(lista);
+  };
+
+  // Requisito 1: la cantidad se modifica con +/- y recalcula el precio
+  // total automáticamente (cantidad × precio unitario), sin tocar el texto.
+  div.querySelector(".qty-minus").onclick = (e) => {
+    e.stopPropagation();
+    if (item.cantidad > 1) item.cantidad -= 1;
+    item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
+    save();
+  };
+
+  div.querySelector(".qty-plus").onclick = (e) => {
+    e.stopPropagation();
+    item.cantidad = (item.cantidad || 1) + 1;
+    item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
+    save();
+  };
+
+  div.querySelector(".fav-btn").onclick = (e) => {
+    e.stopPropagation();
+    toggleFavorito(item.texto);
   };
 
   div.querySelector(".item-precio").onclick = (e) => {
@@ -1005,11 +1192,11 @@ function abrirModalEditarPrecio(item, lista) {
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
 
-  const precioActual = item.precio || detectarPrecio(item.texto);
+  const precioActual = typeof item.precioUnitario === "number" ? item.precioUnitario : detectarPrecio(item.texto);
 
   overlay.innerHTML = `
     <div class="modal-box">
-      <h3>Precio: ${escapeHTML(item.texto)}</h3>
+      <h3>Precio unitario: ${escapeHTML(item.texto)}</h3>
       <input type="number" id="modal-precio" placeholder="0.00" step="0.01" min="0" value="${precioActual.toFixed(2)}" style="font-size: 20px; text-align: center;">
       <div class="modal-actions">
         <button class="btn-cancel" id="modal-cancel">cancelar</button>
@@ -1029,7 +1216,12 @@ function abrirModalEditarPrecio(item, lista) {
   overlay.querySelector("#modal-ok").onclick = () => {
     const nuevoPrecio = parseFloat(input.value);
     if (!isNaN(nuevoPrecio)) {
-      item.precio = nuevoPrecio;
+      item.precioUnitario = redondear2(nuevoPrecio);
+      item.precioTotal = redondear2((item.cantidad || 1) * item.precioUnitario);
+      // Requisito 3: recordamos el precio para la próxima vez que se
+      // añada este mismo producto (estructura preparada para varios
+      // supermercados, ver SUPERMERCADO_ACTUAL).
+      guardarPrecioHistorial(item.texto, item.precioUnitario);
       save();
       renderHome();
     }
@@ -1115,6 +1307,9 @@ function abrirModalEditarCategoria(item, lista) {
     if (selected) {
       item.categoria = selected.dataset.cat;
       item.tags = Array.from(selectedTags);
+      // Requisito 7: la próxima vez que se escriba este mismo producto,
+      // se usará esta categoría antes de volver a intentar detectarla.
+      aprenderCategoria(item.texto, item.categoria);
       save();
     }
     cerrar();
@@ -1206,13 +1401,16 @@ function renderSidebarFavoritos() {
   if (!cont) return;
   cont.innerHTML = "";
 
-  ACCESO_RAPIDO.forEach(texto => {
-    const cat = detectarCategoria(texto);
+  const favoritos = data.favoritos || [];
+  // Si no hay favoritos, .side-list:empty::after ya pinta un mensaje (ver style.css)
+
+  favoritos.forEach(fav => {
+    const cat = detectarCategoriaConAprendizaje(fav.texto);
     const catInfo = CATEGORIAS[cat] || { icon: "box", color: "var(--c-cat-otros)" };
     const row = document.createElement("div");
     row.className = "side-fav-item";
-    row.innerHTML = `<span class="side-fav-item__icon" style="background:${catInfo.color}">${icon(catInfo.icon, 13)}</span><span class="side-fav-item__name">${texto}</span><button type="button" class="side-fav-item__add" title="Añadir a la lista">${icon("plus", 12)}</button>`;
-    row.querySelector(".side-fav-item__add").onclick = () => añadirItemRapido(texto);
+    row.innerHTML = `<span class="side-fav-item__icon" style="background:${catInfo.color}">${icon(catInfo.icon, 13)}</span><span class="side-fav-item__name">${escapeHTML(fav.texto)}</span><button type="button" class="side-fav-item__add" title="Añadir a la lista">${icon("plus", 12)}</button>`;
+    row.querySelector(".side-fav-item__add").onclick = () => añadirItemRapido(fav.texto);
     cont.appendChild(row);
   });
 }
@@ -1247,11 +1445,15 @@ function añadirItemRapido(texto) {
   const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
   if (!lista) return;
   if (!lista.items) lista.items = [];
+  const precioUnitario = obtenerPrecioUnitarioInicial(texto);
   lista.items.push({
     id: Date.now() + Math.random(),
     texto,
+    cantidad: 1,
+    precioUnitario,
+    precioTotal: redondear2(precioUnitario),
     check: false,
-    categoria: detectarCategoria(texto),
+    categoria: detectarCategoriaConAprendizaje(texto),
     tags: detectarTags(texto),
     orden: lista.items.length
   });
@@ -1359,7 +1561,7 @@ function abrirModalResumen(lista) {
   (lista.items || []).forEach(item => {
     const cat = item.categoria || "otros";
     if (!grupos[cat]) grupos[cat] = 0;
-    grupos[cat] += item.precio || detectarPrecio(item.texto);
+    grupos[cat] += typeof item.precioTotal === "number" ? item.precioTotal : (item.cantidad || 1) * detectarPrecio(item.texto);
   });
 
   const catsOrdenadas = Object.keys(grupos).sort((a, b) => {
@@ -1466,6 +1668,11 @@ document.getElementById("input-item").addEventListener("keydown", e => {
   if (e.key === "Enter") agregarItems();
 });
 
+document.getElementById("buscador-input")?.addEventListener("input", (e) => {
+  filtroBusqueda = normalizarTexto(e.target.value);
+  renderHome();
+});
+
 document.getElementById("btn-shopping-mode").onclick = abrirModoCompra;
 document.getElementById("sidebar-nueva-lista")?.addEventListener("click", abrirModalNuevaLista);
 
@@ -1498,14 +1705,18 @@ function agregarItems() {
   const primerTexto = parsed[0]?.texto || "";
 
   parsed.forEach(({ texto, cantidad }) => {
-    const textoFinal = cantidad > 1 ? `${texto} x${cantidad}` : texto;
     if (!lista.items) lista.items = [];
+    const precioUnitario = obtenerPrecioUnitarioInicial(texto);
+    const cantidadFinal = cantidad || 1;
     lista.items.push({
       id: Date.now() + Math.random(),
-      texto: textoFinal,
+      texto,
+      cantidad: cantidadFinal,
+      precioUnitario,
+      precioTotal: redondear2(cantidadFinal * precioUnitario),
       check: false,
-      categoria: detectarCategoria(textoFinal),
-      tags: detectarTags(textoFinal),
+      categoria: detectarCategoriaConAprendizaje(texto),
+      tags: detectarTags(texto),
       orden: lista.items.length
     });
   });
