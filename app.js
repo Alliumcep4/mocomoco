@@ -253,6 +253,22 @@ function formatoEuro(valor) {
   return (valor || 0).toFixed(2).replace(".", ",") + "€";
 }
 
+/* ─── VALIDACIÓN DE ENTRADA (integridad de datos) ───
+   Cualquier precio o cantidad que llegue de un input manual pasa por
+   aquí antes de guardarse. Nunca deben quedar precios negativos,
+   NaN, infinitos o cantidades en 0/negativas en los datos guardados. */
+function validarPrecio(valor) {
+  const n = parseFloat(valor);
+  if (!Number.isFinite(n) || n < 0 || n > 500) return null;
+  return redondear2(n);
+}
+
+function validarCantidad(valor) {
+  const n = parseInt(valor, 10);
+  if (!Number.isFinite(n) || n < 1 || n > 99) return null;
+  return n;
+}
+
 const INDICE_CATEGORIAS = new Map();
 
 (function construirIndice() {
@@ -724,10 +740,12 @@ function obtenerPrecioHistorial(texto) {
 /* Guarda el precio que el usuario acaba de escribir a mano para
    reutilizarlo la próxima vez que añada el mismo producto. */
 function guardarPrecioHistorial(texto, precio) {
+  const precioValido = validarPrecio(precio);
+  if (precioValido === null) return; // nunca guardamos precios inválidos en el historial
   const clave = normalizarTexto(texto);
   if (!data.historialPrecios) data.historialPrecios = {};
   if (!data.historialPrecios[clave]) data.historialPrecios[clave] = {};
-  data.historialPrecios[clave][SUPERMERCADO_ACTUAL] = redondear2(precio);
+  data.historialPrecios[clave][SUPERMERCADO_ACTUAL] = precioValido;
 }
 
 /* Precio unitario inicial para un producto NUEVO: primero mira el
@@ -786,9 +804,12 @@ function toggleFavorito(texto) {
    precioUnitario y precioTotal independientes.
    ═══════════════════════════════════════════════════════ */
 function migrarItem(item) {
-  // Ya está en el formato nuevo: solo nos aseguramos de que
-  // precioTotal exista y esté cuadrado con cantidad × unitario.
+  // Ya está en el formato nuevo: validamos por si acaso hay datos
+  // corruptos (cantidad 0/negativa, precio negativo...) y recalculamos
+  // precioTotal para que cuadre siempre con cantidad × unitario.
   if (typeof item.cantidad === "number" && typeof item.precioUnitario === "number") {
+    item.cantidad = validarCantidad(item.cantidad) ?? 1;
+    item.precioUnitario = validarPrecio(item.precioUnitario) ?? 0;
     item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
     return item;
   }
@@ -796,11 +817,11 @@ function migrarItem(item) {
   // Formato antiguo: la cantidad podía venir pegada al texto ("Leche x3")
   const { base, cantidad } = separarCantidad(item.texto || "");
   item.texto = base;
-  item.cantidad = typeof item.cantidad === "number" ? item.cantidad : (cantidad ? parseInt(cantidad, 10) : 1);
+  item.cantidad = typeof item.cantidad === "number"
+    ? (validarCantidad(item.cantidad) ?? 1)
+    : (validarCantidad(cantidad) ?? 1);
 
-  item.precioUnitario = typeof item.precio === "number"
-    ? item.precio
-    : obtenerPrecioUnitarioInicial(item.texto);
+  item.precioUnitario = validarPrecio(item.precio) ?? obtenerPrecioUnitarioInicial(item.texto);
 
   item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
 
@@ -1157,7 +1178,7 @@ function crearItemEl(item, lista) {
 
   div.querySelector(".qty-plus").onclick = (e) => {
     e.stopPropagation();
-    item.cantidad = (item.cantidad || 1) + 1;
+    item.cantidad = Math.min((item.cantidad || 1) + 1, 99);
     item.precioTotal = redondear2(item.cantidad * item.precioUnitario);
     save();
   };
@@ -1214,17 +1235,24 @@ function abrirModalEditarPrecio(item, lista) {
   overlay.onclick = (e) => { if (e.target === overlay) cerrar(); };
 
   overlay.querySelector("#modal-ok").onclick = () => {
-    const nuevoPrecio = parseFloat(input.value);
-    if (!isNaN(nuevoPrecio)) {
-      item.precioUnitario = redondear2(nuevoPrecio);
-      item.precioTotal = redondear2((item.cantidad || 1) * item.precioUnitario);
-      // Requisito 3: recordamos el precio para la próxima vez que se
-      // añada este mismo producto (estructura preparada para varios
-      // supermercados, ver SUPERMERCADO_ACTUAL).
-      guardarPrecioHistorial(item.texto, item.precioUnitario);
-      save();
-      renderHome();
+    const nuevoPrecio = validarPrecio(input.value);
+    if (nuevoPrecio === null) {
+      // Precio inválido (negativo, vacío, absurdamente alto...): no
+      // guardamos nada y avisamos, pero dejamos el modal abierto para
+      // que pueda corregirlo.
+      input.classList.remove("wiggling");
+      void input.offsetWidth;
+      input.classList.add("input-error", "wiggling");
+      return;
     }
+    item.precioUnitario = nuevoPrecio;
+    item.precioTotal = redondear2((item.cantidad || 1) * item.precioUnitario);
+    // Requisito 3: recordamos el precio para la próxima vez que se
+    // añada este mismo producto (estructura preparada para varios
+    // supermercados, ver SUPERMERCADO_ACTUAL).
+    guardarPrecioHistorial(item.texto, item.precioUnitario);
+    save();
+    renderHome();
     cerrar();
   };
 

@@ -1084,7 +1084,8 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
   margin-bottom: 18px;
   text-align: center;
 }
-.modal-box input[type="text"] {
+.modal-box input[type="text"],
+.modal-box input[type="number"] {
   width: 100%;
   padding: 12px 14px;
   border-radius: var(--r-md);
@@ -1098,7 +1099,14 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
   box-shadow: var(--shadow-bevel);
   transition: border-color var(--dur-fast);
 }
-.modal-box input[type="text"]:focus { border-color: var(--c-primary); }
+.modal-box input[type="text"]:focus,
+.modal-box input[type="number"]:focus { border-color: var(--c-primary); }
+
+/* Precio/cantidad inválidos (requisito de integridad: nunca negativos) */
+.modal-box input.input-error {
+  border-color: var(--c-danger);
+  background: var(--c-danger-bg);
+}
 
 .mood-picker {
   display: flex;
