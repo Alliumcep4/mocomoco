@@ -41,6 +41,7 @@ const ICONS = {
   snowflake: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`,
   can:       `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><rect x="3" y="5" width="10" height="9"/><line x1="3" y1="5" x2="13" y2="5"/><line x1="3" y1="4" x2="13" y2="4"/></svg>`,
   box:       `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><polyline points="1,5 8,9 15,5"/><polygon points="1,5 8,1 15,5 15,13 8,15 1,13"/><line x1="8" y1="9" x2="8" y2="15"/></svg>`,
+  grip:      `<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/><circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/><circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>`,
   drop:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5C8 1.5 3 7.2 3 10.3C3 12.9 5.2 15 8 15C10.8 15 13 12.9 13 10.3C13 7.2 8 1.5 8 1.5Z"/></svg>`,
   fire:      `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15C5 15 3 13 3 10.3C3 8.5 4 7 4.7 5.8C5 7 6 7.3 6 6.3C6 4.5 7.2 2.6 8.8 1.5C8.3 3.2 9.4 4 10.2 5C11.2 6.2 12 7.5 12 9.6C12 12.6 10.5 15 8 15Z"/></svg>`,
   cart:    `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><polyline points="1,2 3,2 6,11 12,11"/><polyline points="3,4 13,4 12,11"/><rect x="5" y="13" width="2" height="2"/><rect x="10" y="13" width="2" height="2"/></svg>`,
@@ -223,7 +224,35 @@ const CATEGORIAS = {
   }
 };
 
-const ORDEN_SUPERMERCADO = ["fruta","verduras","panadería","lácteos","carne","pescado","congelados","pasta","conservas","bebidas","snacks","limpieza","otros"];
+/* Orden de categorías siguiendo el recorrido típico de un
+   supermercado (pasillo por pasillo), en vez de alfabético.
+   Nuestro sistema solo tiene 13 categorías fijas, así que varios
+   conceptos del recorrido real se agrupan en la misma:
+     - "legumbres" y "caldos de verdura" -> conservas
+     - "toallitas"                        -> limpieza
+     - "bollería"                         -> panadería (ya incluye "pan")
+     - "chocolate"                        -> snacks
+     - "azúcar" y "harinas"               -> otros
+     - "pizzas"                           -> congelados (se detectan como
+                                              pizza congelada, así que van
+                                              al final con el resto de
+                                              congelados, no a mitad)
+     - "carnes, embutidos y quesos"       -> carne + lácteos (el queso
+                                              vive en lácteos)
+   "fruta", "pescado" y "pasta" no los mencionaste; los coloqué junto a
+   verduras, junto a carne, y junto al resto de secos respectivamente.
+   Si quieres otro orden exacto, dime y lo ajusto. */
+const ORDEN_SUPERMERCADO = [
+  "verduras", "fruta",
+  "conservas",
+  "bebidas",
+  "limpieza",
+  "panadería",
+  "snacks",
+  "otros", "pasta",
+  "carne", "lácteos", "pescado",
+  "congelados"
+];
 
 const CADENAS_IGNORADAS = new Set([
   "mercadona","carrefour","lidl","dia","alcampo","eroski","aldi",
@@ -906,6 +935,22 @@ const MOODS = [
    categoría o etiqueta, sin recargar nada. ─── */
 let filtroBusqueda = "";
 
+/* ─── ARRASTRAR PARA REORDENAR ─── */
+let dragItemId = null;
+
+function reordenarItems(lista, idOrigen, idDestino) {
+  if (!lista.items) return;
+  const iOrigen = lista.items.findIndex(i => i.id === idOrigen);
+  const iDestino = lista.items.findIndex(i => i.id === idDestino);
+  if (iOrigen === -1 || iDestino === -1 || iOrigen === iDestino) return;
+  const [movido] = lista.items.splice(iOrigen, 1);
+  lista.items.splice(iDestino, 0, movido);
+  // Guardamos el orden explícito por si en el futuro se usa fuera del
+  // propio orden del array (por ejemplo, tras filtrar por búsqueda).
+  lista.items.forEach((it, idx) => { it.orden = idx; });
+  save();
+}
+
 /* ─── GUARDAR ─── */
 async function save() {
   if (auth.currentUser) {
@@ -1137,6 +1182,7 @@ function crearItemEl(item, lista) {
   const favActivo = esFavorito(item.texto);
 
   div.innerHTML = `
+    <span class="drag-handle" draggable="true" title="Arrastrar para reordenar">${icon("grip", 14)}</span>
     <div class="item-checkbox">${item.check ? icon("check", 15) : ""}</div>
     <span class="item-icon-badge" style="background:${catInfo.color || "var(--c-cat-otros)"}">${icon(CATEGORIAS[item.categoria]?.icon || "box", 16)}</span>
     <div class="item-content">
@@ -1166,6 +1212,34 @@ function crearItemEl(item, lista) {
     if (item.check) mascotaReaccionar("check");
     checkListaCompleta(lista);
   };
+
+  // Arrastrar para reordenar: el asa inicia el drag, la tarjeta entera
+  // actúa como zona de destino (dragover/drop).
+  const handle = div.querySelector(".drag-handle");
+  handle.addEventListener("dragstart", (e) => {
+    dragItemId = item.id;
+    div.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(item.id));
+  });
+  handle.addEventListener("dragend", () => {
+    div.classList.remove("dragging");
+    dragItemId = null;
+  });
+  div.addEventListener("dragover", (e) => {
+    if (dragItemId === null) return;
+    e.preventDefault();
+    div.classList.add("drag-over");
+  });
+  div.addEventListener("dragleave", () => {
+    div.classList.remove("drag-over");
+  });
+  div.addEventListener("drop", (e) => {
+    e.preventDefault();
+    div.classList.remove("drag-over");
+    if (dragItemId === null || dragItemId === item.id) return;
+    reordenarItems(lista, dragItemId, item.id);
+  });
 
   // Requisito 1: la cantidad se modifica con +/- y recalcula el precio
   // total automáticamente (cantidad × precio unitario), sin tocar el texto.
@@ -1374,11 +1448,82 @@ function renderProgreso(lista) {
   bar.classList.toggle("completo", pct === 100);
 }
 
-/* ─── SIDEBAR: categorías, acceso rápido y listas ─── */
+/* ─── SIDEBAR: gráfico, categorías, favoritos y listas ─── */
 function renderSidebar() {
+  renderSidebarGrafico();
   renderSidebarCategorias();
   renderSidebarFavoritos();
   renderSidebarRecientes();
+}
+
+/* Gráfico circular (donut) del gasto por categoría, hecho con un
+   <svg> + <circle> por segmento (stroke-dasharray), sin librerías
+   externas. Reutiliza los mismos colores que ya usa cada categoría
+   en el resto de la app (CATEGORIAS[cat].color) y el mismo orden
+   de recorrido (ORDEN_SUPERMERCADO). */
+function renderSidebarGrafico() {
+  const cont = document.getElementById("sidebar-grafico");
+  if (!cont) return;
+  const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
+  cont.innerHTML = "";
+  if (!lista || !lista.items || lista.items.length === 0) return;
+
+  const grupos = {};
+  lista.items.forEach(item => {
+    const cat = item.categoria || "otros";
+    const importe = typeof item.precioTotal === "number"
+      ? item.precioTotal
+      : (item.cantidad || 1) * detectarPrecio(item.texto);
+    grupos[cat] = (grupos[cat] || 0) + importe;
+  });
+
+  const totalGeneral = redondear2(Object.values(grupos).reduce((a, b) => a + b, 0));
+  if (totalGeneral <= 0) return;
+
+  const catsOrdenadas = Object.keys(grupos).sort((a, b) => {
+    const ia = ORDEN_SUPERMERCADO.indexOf(a);
+    const ib = ORDEN_SUPERMERCADO.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+
+  const R = 30, CENTRO = 38, GROSOR = 13;
+  const circunferencia = 2 * Math.PI * R;
+  let acumulado = 0;
+
+  const segmentos = catsOrdenadas.map(cat => {
+    const catInfo = CATEGORIAS[cat] || { color: "var(--c-cat-otros)" };
+    const frac = grupos[cat] / totalGeneral;
+    const largo = frac * circunferencia;
+    const offset = -acumulado;
+    acumulado += largo;
+    return `<circle cx="${CENTRO}" cy="${CENTRO}" r="${R}" fill="none"
+      style="stroke:${catInfo.color}" stroke-width="${GROSOR}"
+      stroke-dasharray="${largo} ${circunferencia - largo}"
+      stroke-dashoffset="${offset}" transform="rotate(-90 ${CENTRO} ${CENTRO})" />`;
+  }).join("");
+
+  const leyenda = catsOrdenadas.map(cat => {
+    const catInfo = CATEGORIAS[cat] || { color: "var(--c-cat-otros)" };
+    return `<div class="chart-legend-item">
+      <span class="chart-legend-dot" style="background:${catInfo.color}"></span>
+      <span class="chart-legend-name">${cat}</span>
+      <span class="chart-legend-value">${formatoEuro(grupos[cat])}</span>
+    </div>`;
+  }).join("");
+
+  cont.innerHTML = `
+    <div class="chart-pie-wrap">
+      <svg viewBox="0 0 76 76" width="96" height="96" class="chart-pie">
+        <circle cx="${CENTRO}" cy="${CENTRO}" r="${R}" fill="none" style="stroke:var(--c-border-soft)" stroke-width="${GROSOR}" />
+        ${segmentos}
+      </svg>
+      <div class="chart-pie-total">
+        <span class="chart-pie-total__value">${formatoEuro(totalGeneral)}</span>
+        <span class="chart-pie-total__label">total</span>
+      </div>
+    </div>
+    <div class="chart-legend">${leyenda}</div>
+  `;
 }
 
 function renderSidebarCategorias() {

@@ -607,6 +607,30 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
   opacity: 0.8;
 }
 .list-item.checking { animation: check-bounce 0.35s var(--ease-bounce); }
+.list-item.dragging {
+  opacity: 0.45;
+  transform: scale(0.98) rotate(-1deg);
+}
+.list-item.drag-over {
+  border-color: var(--c-primary);
+  box-shadow: 0 -3px 0 var(--c-primary);
+  transform: translateY(2px);
+}
+
+.drag-handle {
+  flex-shrink: 0;
+  width: 20px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-border-dark);
+  opacity: 0.5;
+  cursor: grab;
+  transition: opacity var(--dur-fast) ease;
+}
+.drag-handle:hover { opacity: 1; }
+.drag-handle:active { cursor: grabbing; }
 
 .item-icon-badge {
   width: 32px;
@@ -1544,6 +1568,73 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
   padding: 4px 2px;
 }
 
+/* ─── GRÁFICO CIRCULAR (Total por categorías) ─── */
+.chart-wrap:empty::after {
+  content: "añade productos para ver el gráfico";
+  display: block;
+  font-family: var(--font-hand);
+  font-size: 14px;
+  color: var(--c-text-muted);
+  padding: 4px 2px;
+}
+.chart-pie-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 4px auto 12px;
+}
+.chart-pie circle {
+  transition: stroke-dasharray 0.5s var(--ease-bounce);
+}
+.chart-pie-total {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.chart-pie-total__value {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--c-text);
+}
+.chart-pie-total__label {
+  font-family: var(--font-hand);
+  font-size: 11px;
+  color: var(--c-text-muted);
+}
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--c-text);
+}
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+.chart-legend-name {
+  flex: 1;
+  text-transform: capitalize;
+}
+.chart-legend-value {
+  color: var(--c-text-muted);
+  font-family: var(--font-hand);
+  font-size: 12px;
+}
+
 .side-cat-item {
   display: flex;
   align-items: center;
@@ -1705,6 +1796,7 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
   }
   .item-content  { gap: 6px; }
   .item-actions  { gap: 10px; }
+  .drag-handle   { display: none; }
   .item-checkbox { width: 32px; height: 32px; order: 1; }
   .item-icon-badge { order: 2; }
   .item-content  { order: 3; flex: 1 1 auto; min-width: 100px; }
