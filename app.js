@@ -872,6 +872,19 @@ function migrarDatos() {
   if (!data.historialPrecios) data.historialPrecios = {};
   if (!data.categoriasAprendidas) data.categoriasAprendidas = {};
   if (!data.favoritos) data.favoritos = [];
+
+  if (data.categoryDetectionVersion === 1) return false;
+
+  data.listas.forEach(lista => {
+    lista.items.forEach(item => {
+      const categoriaAprendida = data.categoriasAprendidas[normalizarTexto(item.texto || "")];
+      item.categoria = CATEGORIAS[categoriaAprendida]
+        ? categoriaAprendida
+        : detectarCategoria(item.texto || "");
+    });
+  });
+  data.categoryDetectionVersion = 1;
+  return true;
 }
 
 /* ─── MASCOTA (eliminada) ─── */
@@ -974,11 +987,12 @@ onAuthStateChanged(auth, (user) => {
     }
     if (unsub) unsub();
     unsub = onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
+      let categoriasMigradas = false;
       if (snap.exists()) {
         data = snap.data();
         if (!data.listas) data.listas = [];
         if (!data.listaActiva && data.listas.length) data.listaActiva = data.listas[0].id;
-        migrarDatos();
+        categoriasMigradas = migrarDatos();
       } else {
         const id = Date.now();
         data = { listas: [{ id, titulo: "Mi Lista", icon: "cart", items: [] }], listaActiva: id };
@@ -986,6 +1000,7 @@ onAuthStateChanged(auth, (user) => {
         save();
       }
       renderAll();
+      if (categoriasMigradas) save();
     });
     setTimeout(() => mascotaReaccionar("bienvenida"), 600);
   } else {
