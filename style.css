@@ -463,6 +463,19 @@ main { max-width: 1140px; margin: 0 auto; padding: 22px 24px 4px; }
 }
 .rename-list-btn:hover { color: var(--c-primary); transform: scale(1.15) rotate(-6deg); }
 
+.clear-list-btn {
+  background: transparent;
+  border: none;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 140ms ease, transform 140ms var(--ease-bounce), opacity 140ms ease;
+}
+.clear-list-btn:hover:not(:disabled) { color: var(--c-danger); transform: scale(1.15); }
+.clear-list-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* ─── PROGRESO ─── */
 .progreso-container {
   display: flex;

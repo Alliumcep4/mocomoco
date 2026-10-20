@@ -1020,9 +1020,11 @@ function renderHome() {
     listaHTML.appendChild(crearEstadoVacio());
     renderProgreso(null);
     if (precioEl) precioEl.textContent = "0,00€";
+    document.getElementById("btn-clear-list").disabled = true;
     return;
   }
 
+  document.getElementById("btn-clear-list").disabled = !lista.items?.length;
   titleEl.innerHTML = `<span class="title-icon">${icon(lista.icon || "cart", 18)}</span>${escapeHTML(lista.titulo)}`;
   renderProgreso(lista);
 
@@ -1847,6 +1849,18 @@ document.getElementById("buscador-input")?.addEventListener("input", (e) => {
 });
 
 document.getElementById("btn-shopping-mode").onclick = abrirModoCompra;
+document.getElementById("btn-clear-list").addEventListener("click", () => {
+  const lista = data.listas.find(l => l.id === data.listaActiva) || data.listas[0];
+  if (!lista || !lista.items?.length) return;
+  const cantidad = lista.items.length;
+  const elementos = cantidad === 1 ? "1 elemento" : `${cantidad} elementos`;
+  if (!confirm(`¿Vaciar la lista "${lista.titulo}"? Se eliminarán ${elementos}.`)) return;
+
+  lista.items = [];
+  filtroBusqueda = "";
+  document.getElementById("buscador-input").value = "";
+  save();
+});
 document.getElementById("sidebar-nueva-lista")?.addEventListener("click", abrirModalNuevaLista);
 
 document.getElementById("btn-rename-list")?.addEventListener("click", () => {
